@@ -11,7 +11,7 @@ class UpdateMediaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+             //
+            'name' => 'sometimes|string|max:255',
+            'url' => 'sometimes|url',
+            'type' => 'sometimes|string|max:50',
+            'description' => 'sometimes|nullable|string|max:500',
+
         ];
     }
 }

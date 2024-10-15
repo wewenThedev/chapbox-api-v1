@@ -11,7 +11,7 @@ class StoreMediaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,11 @@ class StoreMediaRequest extends FormRequest
     {
         return [
             //
+            'name' => 'required|string|max:255',
+            'url' => 'required|url',
+            'type' => 'required|string|max:50',
+            'description' => 'nullable|string|max:500',
+
         ];
     }
 }

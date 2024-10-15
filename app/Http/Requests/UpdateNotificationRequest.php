@@ -11,7 +11,7 @@ class UpdateNotificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdateNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'message' => 'sometimes|required|string|max:500',
+            'notification_category_id' => 'sometimes|exists:notification_categories,id',
+
         ];
     }
 }
