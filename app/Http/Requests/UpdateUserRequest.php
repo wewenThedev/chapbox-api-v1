@@ -11,7 +11,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,14 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             //
+            'firstname' => 'sometimes|required|string|max:255',
+            'lastname' => 'sometimes|required|string|max:255',
+            'username' => 'sometimes|required|string|unique:users|min:4|max:255',
+            'phone' => 'sometimes|required|string|max:15',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $this->user->id,
+            'profile_id' => 'sometimes|required|int|exists:profiles,id|,' . $this->user->profile_id,
+            'picture_id' => 'sometimes|required|int|exists:media,id|,' . $this->user->picture_id,
+
         ];
     }
 }
