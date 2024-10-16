@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 
 use App\Http\Controllers;
-
+use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
@@ -35,9 +35,16 @@ use App\Http\Controllers\ShopController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+/*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
+Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+
+
+//Routes pour l'authentification
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // Routes pour les utilisateurs
 Route::apiResource('users', UserController::class);
