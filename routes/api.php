@@ -42,9 +42,19 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 
 
 //Routes pour l'authentification
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+//Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/register/admin-manager', [AuthController::class, 'registerAdminOrManager']);
+Route::post('/register/customer', [AuthController::class, 'registerCustomer']);
+
+Route::post('/login/admin-manager', [AuthController::class, 'loginAdminOrController']);
+Route::post('/login/customer', [AuthController::class, 'loginCustomer']);
+
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+// Obtenir les infos de l'utilisateur connecté
+Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+
 
 // Routes pour les utilisateurs
 Route::apiResource('users', UserController::class);
