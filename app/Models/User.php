@@ -56,4 +56,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function isRole(string $role) : bool {
+        if($this->profile->name === $role){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
