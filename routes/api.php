@@ -63,40 +63,40 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 
 
 // Routes pour les utilisateurs
-//Route::apiResource('users', UserController::class);
-Route::resource('users', UserController::class);
+Route::apiResource('users', UserController::class);
+//Route::resource('users', UserController::class);
 
 // Routes pour les commandes
-//Route::apiResource('orders', OrderController::class);
-Route::resource('orders', OrderController::class);
+Route::apiResource('orders', OrderController::class);
+//Route::resource('orders', OrderController::class);
 
 // Routes pour les marques
-//Route::apiResource('brands', BrandController::class);
-Route::resource('brands', BrandController::class);
+Route::apiResource('brands', BrandController::class);
+//Route::resource('brands', BrandController::class);
 
 // Routes pour les médias
-//Route::apiResource('media', MediaController::class);
-Route::resource('media', MediaController::class);
+Route::apiResource('media', MediaController::class);
+//Route::resource('media', MediaController::class);
 
 // Routes pour les notifications
-//Route::apiResource('notifications', NotificationController::class);
-Route::resource('notifications', NotificationController::class);
+Route::apiResource('notifications', NotificationController::class);
+//Route::resource('notifications', NotificationController::class);
 
 // Routes pour les avis
-//Route::apiResource('feedbacks', FeedbackController::class);
-Route::resource('feedbacks', FeedbackController::class);
+Route::apiResource('feedbacks', FeedbackController::class);
+//Route::resource('feedbacks', FeedbackController::class);
 
 // Routes pour les paiements
-//Route::apiResource('payments', PaymentController::class);
-Route::resource('payments', PaymentController::class);
+Route::apiResource('payments', PaymentController::class);
+//Route::resource('payments', PaymentController::class);
 
 // Routes pour les cartes
-//Route::apiResource('carts', CartController::class);
-Route::resource('carts', CartController::class);
+Route::apiResource('carts', CartController::class);
+//Route::resource('carts', CartController::class);
 
 // Routes pour les détails de shopping
-//Route::apiResource('shopping-details', ShoppingDetailsController::class);
-Route::resource('shopping-details', ShoppingDetailsController::class);
+Route::apiResource('shopping-details', ShoppingDetailsController::class);
+//Route::resource('shopping-details', ShoppingDetailsController::class);
 
 // Routes pour les promotions
 Route::apiResource('promos', PromoController::class);
@@ -172,15 +172,15 @@ Route::middleware('auth:sanctum')->group(function() {
     // Routes pour l'admin
     Route::group(['middleware' => 'role:admin'], function() {
         Route::get('admin/stats', [AdminDashboardController::class, 'getStats']);
-        Route::get('admin/financial-reports', [AdminDashboardController::class, 'getFinancialReports']);
+        //Route::get('admin/financial-reports', [AdminDashboardController::class, 'getFinancialReports']);
         Route::get('admin/kpi', [AdminDashboardController::class, 'getKPI']);
-        Route::post('admin/export-reports', [AdminDashboardController::class, 'exportReports']);
+        //Route::post('admin/export-reports', [AdminDashboardController::class, 'exportReports']);
     });
 
     // Routes pour le manager
     Route::group(['middleware' => 'role:manager'], function() {
         Route::get('manager/stats', [ManagerDashboardController::class, 'getStats']);
-        Route::get('manager/financial-reports', [ManagerDashboardController::class, 'getFinancialReports']);
+        //Route::get('manager/financial-reports', [ManagerDashboardController::class, 'getFinancialReports']);
         Route::get('manager/kpi', [ManagerDashboardController::class, 'getKPI']);
     });
 });
