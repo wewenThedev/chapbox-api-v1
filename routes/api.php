@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
@@ -62,47 +63,60 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 
 
 // Routes pour les utilisateurs
-Route::apiResource('users', UserController::class);
+//Route::apiResource('users', UserController::class);
+Route::resource('users', UserController::class);
 
+// Routes pour les commandes
+//Route::apiResource('orders', OrderController::class);
+Route::resource('orders', OrderController::class);
+
+// Routes pour les marques
+//Route::apiResource('brands', BrandController::class);
+Route::resource('brands', BrandController::class);
+
+// Routes pour les médias
+//Route::apiResource('media', MediaController::class);
+Route::resource('media', MediaController::class);
+
+// Routes pour les notifications
+//Route::apiResource('notifications', NotificationController::class);
+Route::resource('notifications', NotificationController::class);
+
+// Routes pour les avis
+//Route::apiResource('feedbacks', FeedbackController::class);
+Route::resource('feedbacks', FeedbackController::class);
+
+// Routes pour les paiements
+//Route::apiResource('payments', PaymentController::class);
+Route::resource('payments', PaymentController::class);
+
+// Routes pour les cartes
+//Route::apiResource('carts', CartController::class);
+Route::resource('carts', CartController::class);
+
+// Routes pour les détails de shopping
+//Route::apiResource('shopping-details', ShoppingDetailsController::class);
+Route::resource('shopping-details', ShoppingDetailsController::class);
+
+// Routes pour les promotions
+Route::apiResource('promos', PromoController::class);
+
+///routes resource
 
 // Routes pour les profiles
 Route::apiResource('profiles', ProfileController::class);
 
-// Routes pour les supermarchés
-Route::apiResource('supermarkets', SupermarketController::class);
-
-// Routes pour les produits
-Route::apiResource('products', ProductController::class);
-
-// Routes pour les commandes
-Route::apiResource('orders', OrderController::class);
-
 // Routes pour les catégories
 Route::apiResource('categories', CategoryController::class);
 
-// Routes pour les marques
-Route::apiResource('brands', BrandController::class);
+// Routes pour les produits
+//Route::apiResource('products', ProductController::class);
+//Route::resource('products', ProductController::class);
 
-// Routes pour les médias
-Route::apiResource('media', MediaController::class);
-
-// Routes pour les notifications
-Route::apiResource('notifications', NotificationController::class);
-
-// Routes pour les avis
-//Route::apiResource('feedbacks', FeedbackController::class);
-
-// Routes pour les paiements
-Route::apiResource('payments', PaymentController::class);
-
-// Routes pour les cartes
-Route::apiResource('carts', CartController::class);
-
-// Routes pour les détails de shopping
-Route::apiResource('shopping-details', ShoppingDetailsController::class);
-
-// Routes pour les promotions
-Route::apiResource('promos', PromoController::class);
+// Routes pour les supermarchés
+//temporaire
+//Route::apiResource('supermarkets', SupermarketController::class);
+//Route::resource('supermarkets', SupermarketController::class);
 
 //routes avec middleware
 
@@ -170,4 +184,20 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('manager/kpi', [ManagerDashboardController::class, 'getKPI']);
     });
 });
+
+
+///Routes de dashboard à modifier pour faire correspondre aux controllers des Models
+/*
+Route::get('/dashboard/total-sales', [DashboardController::class, 'totalSales']);
+Route::get('/dashboard/sales-by-day', [DashboardController::class, 'salesByDay']);
+Route::get('/dashboard/sales-by-product', [DashboardController::class, 'salesByProduct']);
+Route::get('/dashboard/sales-by-shop', [DashboardController::class, 'salesByShop']);
+Route::get('/dashboard/anonymous-users', [DashboardController::class, 'anonymousUsers']);
+Route::get('/dashboard/authenticated-users', [DashboardController::class, 'authenticatedUsers']);
+Route::get('/dashboard/active-sessions', [DashboardController::class, 'activeSessions']);
+Route::get('/dashboard/most-viewed-products', [DashboardController::class, 'mostViewedProducts']);
+Route::get('/dashboard/cart-conversion-rate', [DashboardController::class, 'cartConversionRate']);
+Route::get('/dashboard/total-orders', [DashboardController::class, 'totalOrders']);
+Route::get('/dashboard/orders-by-user', [DashboardController::class, 'ordersByUser']);
+*/
 
