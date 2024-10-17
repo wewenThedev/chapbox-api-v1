@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 
 class PaymentMethodController extends Controller
 {
+
+    public function generatePaymentMethodLogoFilename($paymentMethod) {
+        $timestamp = time();
+        $extension = $this->getFileExtension($paymentMethod->logo); // Ex : .png, .jpg
+        return 'payment_method_logo_' . $paymentMethod->id . '_' . $timestamp . $extension;
+    }
+    
     /**
      * Display a listing of the resource.
      */

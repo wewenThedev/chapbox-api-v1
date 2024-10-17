@@ -25,6 +25,10 @@ use App\Http\Controllers\SupermarketController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\ShopController;
 
+//
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\ManagerDashboardController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -99,3 +103,71 @@ Route::apiResource('shopping-details', ShoppingDetailsController::class);
 
 // Routes pour les promotions
 Route::apiResource('promos', PromoController::class);
+
+//routes avec middleware
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::group(['middleware' => 'role:admin'], function() {
+        //Route:resource à changer avec ROute:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
+        Route::resource('supermarkets', SupermarketController::class);
+    });
+    Route::group(['middleware' => 'role:manager'], function() {
+        Route::get('supermarkets', [SupermarketController::class, 'index']);
+    });
+    Route::group(['middleware' => 'role:customer'], function() {
+        Route::get('supermarkets', [SupermarketController::class, 'index']);
+    });
+});
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::group(['middleware' => 'role:admin'], function() {
+        Route::resource('products', ProductController::class);
+    });
+    Route::group(['middleware' => 'role:manager'], function() {
+        Route::get('products', [ProductController::class, 'index']);
+        Route::post('products', [ProductController::class, 'store']);
+        Route::put('products/{id}', [ProductController::class, 'update']);
+        Route::delete('products/{id}', [ProductController::class, 'destroy']);
+    });
+    Route::group(['middleware' => 'role:customer'], function() {
+        Route::get('products', [ProductController::class, 'index']);
+    });
+});
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::group(['middleware' => 'role:admin'], function() {
+        Route::get('orders', [OrderController::class, 'index']);
+    });
+    Route::group(['middleware' => 'role:manager'], function() {
+        Route::get('orders', [OrderController::class, 'index']);
+
+        //update Order Status
+        Route::put('orders/{id}', [OrderController::class, 'update']);
+    });
+    Route::group(['middleware' => 'role:customer'], function() {
+        Route::post('orders', [OrderController::class, 'store']);
+        Route::get('orders/{id}', [OrderController::class, 'show']);
+    });
+});
+
+
+
+//dashboard Admin
+
+Route::middleware('auth:sanctum')->group(function() {
+    // Routes pour l'admin
+    Route::group(['middleware' => 'role:admin'], function() {
+        Route::get('admin/stats', [AdminDashboardController::class, 'getStats']);
+        Route::get('admin/financial-reports', [AdminDashboardController::class, 'getFinancialReports']);
+        Route::get('admin/kpi', [AdminDashboardController::class, 'getKPI']);
+        Route::post('admin/export-reports', [AdminDashboardController::class, 'exportReports']);
+    });
+
+    // Routes pour le manager
+    Route::group(['middleware' => 'role:manager'], function() {
+        Route::get('manager/stats', [ManagerDashboardController::class, 'getStats']);
+        Route::get('manager/financial-reports', [ManagerDashboardController::class, 'getFinancialReports']);
+        Route::get('manager/kpi', [ManagerDashboardController::class, 'getKPI']);
+    });
+});
+

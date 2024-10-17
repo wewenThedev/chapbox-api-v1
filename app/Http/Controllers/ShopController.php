@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
+    public function generateShopImageFilename($shop) {
+        $timestamp = time();
+        $extension = $this->getFileExtension($shop->image); // Ex : .png, .jpg
+        Return 'shop_image_' . $shop->id . '_' . $timestamp . $extension;
+    }
     /**
      * Display a listing of the resource.
      */

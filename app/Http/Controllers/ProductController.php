@@ -22,13 +22,28 @@ class ProductController extends Controller
         $this->middleware();
     }*/
     
+    public function generateProductImageFilename($product) {
+        $timestamp = time();
+        //what if there is a lot of image?
+        $extension = $this->getFileExtension($product->image); // Ex : .png, .jpg
+        Return 'product_image_' . $product->id . '_' . $timestamp . $extension;
+    }
+    
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
-        return Product::all();
+        if (auth()->user()->role == 'manager') {
+            //$products = Product::where('manager_id', auth()->id())->paginate(5);//get();
+            $products = Product::where('manager_id', auth()->id())->get();
+        } else {
+            $products = Product::all();
+            //$products = Product::paginate(5);
+        }
+        return $products;
         //return Product::paginate(5);
     }
 
@@ -51,6 +66,7 @@ class ProductController extends Controller
     public function show(/*string $id*/ Product $product)
     {
         //
+        //$product = Product::findOrFail($id);
         return $product;
     }
 
@@ -61,6 +77,8 @@ class ProductController extends Controller
     {
         $this->authorize('update', $product);
 
+        //$product = Product::findOrFail($id);
+
         $product->update($request->validated());
         return response()->json($product);
 
@@ -69,12 +87,16 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(/*string $id*/ Product $product)
-    {
-        $this->authorize('delete', $product);
+    public function destroy($id)
+{
+    $product = Product::findOrFail($id);
 
-        $product->delete();
-        return response()->json(null, 204);
+    $this->authorize('delete', $product);
 
-    }
+    $product->delete();
+
+    //return response()->json(['message' => 'Product deleted successfully'], 204);
+    return response()->json(null, 204);
+}
+
 }

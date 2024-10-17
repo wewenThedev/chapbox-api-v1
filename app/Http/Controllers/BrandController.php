@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
+
+    public function generateBrandLogoFilename($brand) {
+        $timestamp = time();
+        $extension = $this->getFileExtension($brand->logo); // Ex : .png, .jpg
+        Return 'brand_logo_' . $brand->id . '_' . $timestamp . $extension;
+    }
+    
     /**
      * Display a listing of the resource.
      */
