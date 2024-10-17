@@ -18,7 +18,8 @@ class ProfileController extends Controller
     public function index()
     {
         //
-        return Profile::all();
+        //return Profile::all();
+        return Profile::paginate(2);
     }
 
     /**

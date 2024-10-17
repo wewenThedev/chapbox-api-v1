@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -58,6 +59,10 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 
 // Routes pour les utilisateurs
 Route::apiResource('users', UserController::class);
+
+
+// Routes pour les profiles
+Route::apiResource('profiles', ProfileController::class);
 
 // Routes pour les supermarchés
 Route::apiResource('supermarkets', SupermarketController::class);
