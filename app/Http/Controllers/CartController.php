@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCartRequest;
+use App\Http\Requests\UpdateCartRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Cart;
@@ -9,7 +11,10 @@ use App\Models\User;
 
 class CartController extends Controller
 {
-    Public function createCart(Request $request)
+    /**
+     * Initialize Cart when user create account or open the application for the first time
+     */
+    public function createCart(StoreCartRequest $request)
 {
 
     $userId = $request->user()->id ?? null;
@@ -21,7 +26,7 @@ class CartController extends Controller
         'device_id' => $deviceId,
     ]);
 
-    Return response()->json(['cart' => $cart], 201);
+    return response()->json(['cart' => $cart], 201);
 }
 
     /**
@@ -63,4 +68,5 @@ class CartController extends Controller
     {
         //
     }
+
 }

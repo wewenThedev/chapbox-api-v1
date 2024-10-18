@@ -41,6 +41,8 @@ use App\Http\Controllers\ManagerDashboardController;
 |
 */
 
+
+// Obtenir les infos de l'utilisateur connecté
 /*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });*/
@@ -50,17 +52,13 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 //Routes pour l'authentification
 //Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/register/admin-manager', [AuthController::class, 'registerAdminOrManager']);
-Route::post('/register/customer', [AuthController::class, 'registerCustomer']);
+Route::post('/register/admin-manager', [AuthController::class, 'registerAdminOrManager'])->name('register.dashboard');
+Route::post('/register/customer', [AuthController::class, 'registerCustomer'])->name('register.customer');
 
-Route::post('/login/admin-manager', [AuthController::class, 'loginAdminOrController']);
-Route::post('/login/customer', [AuthController::class, 'loginCustomer']);
+Route::post('/login/admin-manager', [AuthController::class, 'loginAdminOrController'])->name('login.dashboard');
+Route::post('/login/customer', [AuthController::class, 'loginCustomer'])->name('login.customer');
 
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
-// Obtenir les infos de l'utilisateur connecté
-Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
-
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
 
 // Routes pour les utilisateurs
 Route::apiResource('users', UserController::class);
@@ -90,6 +88,10 @@ Route::apiResource('feedbacks', FeedbackController::class);
 Route::apiResource('payments', PaymentController::class);
 //Route::resource('payments', PaymentController::class);
 
+// Routes pour les paiements
+Route::apiResource('payment-methods', PaymentMethodController::class);
+//Route::resource('payments', PaymentController::class);
+
 // Routes pour les cartes
 Route::apiResource('carts', CartController::class);
 //Route::resource('carts', CartController::class);
@@ -99,7 +101,7 @@ Route::apiResource('shopping-details', ShoppingDetailsController::class);
 //Route::resource('shopping-details', ShoppingDetailsController::class);
 
 // Routes pour les promotions
-Route::apiResource('promos', PromoController::class);
+Route::resource('promos', PromoController::class);
 
 ///routes resource
 
@@ -120,9 +122,11 @@ Route::apiResource('categories', CategoryController::class);
 
 //routes avec middleware
 
+/*
 Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
-        //Route:resource à changer avec ROute:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
+        //Route:resource à changer avec Route:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
+        //Route::resource('supermarkets', SupermarketController::class)->except(['index', 'show']);
         Route::resource('supermarkets', SupermarketController::class);
     });
     Route::group(['middleware' => 'role:manager'], function() {
@@ -130,6 +134,23 @@ Route::middleware('auth:sanctum')->group(function() {
     });
     Route::group(['middleware' => 'role:customer'], function() {
         Route::get('supermarkets', [SupermarketController::class, 'index']);
+    });  
+});*/
+
+Route::resource('supermarkets', SupermarketController::class);
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::group(['middleware' => 'role:admin'], function() {
+        //Route:resource à changer avec Route:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
+        Route::resource('shops', ShopController::class);
+    });
+    Route::group(['middleware' => 'role:manager'], function() {
+        Route::get('shops', [ShopController::class, 'index']);
+        //what to update?
+        Route::post('shops', [ShopController::class, 'update']);
+    });
+    Route::group(['middleware' => 'role:customer'], function() {
+        Route::get('shops', [ShopController::class, 'index']);
     });
 });
 
@@ -164,6 +185,12 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 });
 
+//gestion du panier
+
+Route::post('/cart/create', [CartController::class, 'createCart']);
+Route::post('/cart/add', [CartController::class, 'addItemToCart']);
+Route::post('/cart/remove', [CartController::class, 'removeItemFromCart']);
+Route::get('/cart', [CartController::class, 'viewCart']);
 
 
 //dashboard Admin

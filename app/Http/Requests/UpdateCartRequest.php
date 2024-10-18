@@ -21,8 +21,10 @@ class UpdateCartRequest extends FormRequest
      */
     public function rules(): array
     {
+        //après qu'un utilisateur ait créé son compte je rempli le user_id
         return [
-            //
+            'user_id' => 'unique|exists,users:id',
+            'device_id' => 'string', //should be required
         ];
     }
 }

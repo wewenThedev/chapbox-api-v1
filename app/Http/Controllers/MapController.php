@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class BrandController extends Controller
+class MapController extends Controller
 {
-
-    public function generateBrandLogoFilename($brand) {
-        $timestamp = time();
-        $extension = $this->getFileExtension($brand->logo); // Ex : .png, .jpg
-        return 'brand_logo_' . $brand->id . '_' . $timestamp . $extension;
-    }
-    
     /**
      * Display a listing of the resource.
      */
     public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
         //
     }
@@ -33,6 +34,14 @@ class BrandController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
     {
         //
     }

@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Models\ShoppingDetails;
+use App\Models\User;
+
 class Cart extends Model
 {
     use HasFactory, SoftDeletes;
@@ -20,4 +23,10 @@ class Cart extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    Public function shoppingDetails()
+    {
+        return $this->hasMany(ShoppingDetails::class);
+    }
+
 }

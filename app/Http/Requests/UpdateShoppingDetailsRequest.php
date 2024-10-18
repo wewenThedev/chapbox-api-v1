@@ -22,7 +22,10 @@ class UpdateShoppingDetailsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'product_id' => 'required|exists:products,id',
+            'shop_id' => 'required|exists:shops,id',
+            'quantity' => 'required|integer|min:1',
+            'cart_id' => 'required|exists:carts,id',
         ];
     }
 }
