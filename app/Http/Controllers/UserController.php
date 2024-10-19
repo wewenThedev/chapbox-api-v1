@@ -77,9 +77,16 @@ class UserController extends Controller
 
     }
 
+    public function updateSavedAddress(string $id){
+
+    }
+
+    public function removeSavedAddress(string $id){
+
+    }
+
     public function getProfilePicture(){
 
     }
 
-    //public function
 }

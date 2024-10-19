@@ -87,6 +87,8 @@ class ShoppingDetailsController extends Controller
 
     public function updateItemQuantity(UpdateShoppingDetailsRequest $request){
         $requestValidated = $request->validated();
+
+        //pas terminé
     }
 
     public function removeItemFromCart(Request $request){

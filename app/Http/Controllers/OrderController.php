@@ -97,6 +97,16 @@ class OrderController extends Controller
     return response()->json(null, 204);
     }
 
+    public function updateOrderStatus(){
+        //to write
+    }
+
+    //spublic function 
+
+
+
+    //admin functions
+
     public function getTotalOrders(){
         $totalOrders = Order::count();
         return response()->json($totalOrders, 201); 
