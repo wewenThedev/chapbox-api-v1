@@ -97,9 +97,23 @@ class OrderController extends Controller
     return response()->json(null, 204);
     }
 
-    public function updateOrderStatus(){
-        //to write
-    }
+    public function updateOrderStatus(Request $request, $orderId)
+{
+    // Valider les données de la requête
+    $request->validate([
+        'status' => 'required|string|in:pending,completed,cancelled',
+    ]);
+
+    // Trouver la commande par ID
+    $order = Order::findOrFail($orderId);
+    
+    // Mettre à jour le statut de la commande
+    $order->status = $request->status;
+    $order->save();
+
+    return response()->json(['message' => 'Order status updated successfully.', 'order' => $order]);
+}
+
 
     //spublic function 
 
