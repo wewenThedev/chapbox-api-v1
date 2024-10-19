@@ -64,4 +64,22 @@ class UserController extends Controller
         return response()->json(null, 204);
 
     }
+
+    public function getOrderHistory(){
+        //return all the orders from a user
+    }
+
+    public function getCartProducts(){
+
+    }
+
+    public function getSavedAdresses(){
+
+    }
+
+    public function getProfilePicture(){
+
+    }
+
+    //public function
 }
