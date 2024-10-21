@@ -58,7 +58,8 @@ class MediaController extends Controller
     public function index()
     {
         //
-        return Media::all();
+        //return Media::all();
+        return Media::paginate(2);
     }
 
     /**
@@ -75,18 +76,18 @@ class MediaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(/*string $id*/ Media $media)
+    public function show(string $id /*Media $media*/)
     {
-        //
+        $media = Media::findOrFail($id);
         return $media;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMediaRequest $request, /*string $id*/ Media $media)
+    public function update(UpdateMediaRequest $request, string $id /*Media $media*/)
     {
-        //
+        $media = Media::findOrFail($id);
         $media->update($request->validated());
         return response()->json($media);
 
@@ -95,9 +96,9 @@ class MediaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(/*string $id*/ Media $media)
+    public function destroy(string $id /*Media $media*/)
     {
-        //
+        $media = Media::findOrFail($id);
         $media->delete();
         return response()->json(null, 204);
 

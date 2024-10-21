@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -68,6 +69,18 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('orders', OrderController::class);
 //Route::resource('orders', OrderController::class);
 
+//Route pour les adresses
+/*Route::apiResource('addresses', [AddressController::class]);
+Route::get('addresses/reverse-geocode', [AddressController::class, 'reverseGeocode']);
+Route::get('addresses/places', [AddressController::class, 'nearbyPlaces']);
+Route::get('addresses/directions', [AddressController::class, 'getDirections']);
+Route::get('addresses/text-search', [AddressController::class, 'textSearch']);
+Route::get('addresses/places-details', [AddressController::class, 'placesDetails']);
+
+/*Route::controller(AddressController::class)->group(function(){
+
+});*/
+
 // Routes pour les marques
 Route::apiResource('brands', BrandController::class);
 //Route::resource('brands', BrandController::class);
@@ -112,13 +125,16 @@ Route::apiResource('profiles', ProfileController::class);
 Route::apiResource('categories', CategoryController::class);
 
 // Routes pour les produits
-//Route::apiResource('products', ProductController::class);
+Route::apiResource('products', ProductController::class);
 //Route::resource('products', ProductController::class);
 
 // Routes pour les supermarchés
 //temporaire
-//Route::apiResource('supermarkets', SupermarketController::class);
+Route::apiResource('supermarkets', SupermarketController::class);
 //Route::resource('supermarkets', SupermarketController::class);
+
+// Routes pour les shops - boutiques
+Route::apiResource('shops', ShopController::class);
 
 //routes avec middleware
 
@@ -136,8 +152,6 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('supermarkets', [SupermarketController::class, 'index']);
     });  
 });*/
-
-Route::resource('supermarkets', SupermarketController::class);
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
@@ -184,6 +198,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('orders/{id}', [OrderController::class, 'show']);
     });
 });
+//Regénérer le PDF du dictionnaire de données de la BD chapbox
 
 //gestion du panier
 
@@ -211,6 +226,19 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('manager/kpi', [ManagerDashboardController::class, 'getKPI']);
     });
 });
+
+
+Route::get('/fedapay/token', [PaymentController::class, 'generatePaymentToken']);
+Route::post('/fedapay/payment', [PaymentController::class, 'processPayment']);
+/*use Barryvdh\DomPDF\Facade as PDF;
+
+public function generateInvoice($orderId)
+{
+    $order = Order::findOrFail($orderId);
+    $pdf = PDF::loadView('invoice', compact('order'));
+    return $pdf->download('invoice.pdf');
+}
+*/
 
 
 ///Routes de dashboard à modifier pour faire correspondre aux controllers des Models

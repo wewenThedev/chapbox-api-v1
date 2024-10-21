@@ -12,6 +12,8 @@ use App\Models\Shop;
 use App\Models\ShoppingDetails;
 use App\Models\ShopProduct;
 
+use Illuminate\Support\Facades\DB;
+
 class ShoppingDetailsController extends Controller
 {
     /**
@@ -20,6 +22,8 @@ class ShoppingDetailsController extends Controller
     public function index()
     {
         //
+        //return ShoppingDetails::all();
+        return ShoppingDetails::paginate(5);
     }
 
     /**
@@ -28,6 +32,9 @@ class ShoppingDetailsController extends Controller
     public function store(StoreShoppingDetailsRequest $request)
     {
         //
+        $shoppingDetails = ShoppingDetails::create($request->validated());
+        return response()->json($shoppingDetails, 201);
+
     }
 
     /**
@@ -35,7 +42,8 @@ class ShoppingDetailsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $shoppingDetails = ShoppingDetails::findOrFail($id);
+        return $shoppingDetails;
     }
 
     /**
@@ -43,7 +51,10 @@ class ShoppingDetailsController extends Controller
      */
     public function update(UpdateShoppingDetailsRequest $request, string $id)
     {
-        //
+        $shoppingDetails = ShoppingDetails::findOrFail($id);
+        $shoppingDetails->update($request->validated());
+        return response()->json($shoppingDetails);
+
     }
 
     /**
@@ -51,7 +62,10 @@ class ShoppingDetailsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $shoppingDetails = ShoppingDetails::findOrFail($id);
+        $shoppingDetails->delete();
+        return response()->json(null, 204);
+
     }
 
     public function addItemToCart(UpdateShoppingDetailsRequest $request){
@@ -91,30 +105,54 @@ class ShoppingDetailsController extends Controller
         //pas terminé
     }
 
-    public function removeItemFromCart(Request $request){
-        $requestValidated = $request->validated();
+    Public function removeItemFromCart(Request $request)
+{
+    $validated = $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'cart_id' => 'required|exists:carts,id',
+    ]);
 
-        $cart = Cart::find($requestValidated['cart_id']);
-    if (!$cart) {
-        return response()->json(['error' => 'Cart not found.'], 404);
+    $cart = Cart::find($validated['cart_id']);
+    If (!$cart) {
+        Return response()->json(['error' => 'Cart not found.'], 404);
     }
 
     // Supprimer le produit du panier
-    $cart->items()->where('product_id', $requestValidated['product_id'])->delete();
+    $cart->shoppingDetails()->where('product_id', $validated['product_id'])->delete();
 
-    return response()->json(['message' => 'Item removed from cart.'], 200);
+    // Recalculer le total après suppression
+    $total = $cart->shoppingDetails()->sum(DB::raw('quantity * unit_price'));
+
+    Return response()->json([
+        'message' => 'Item removed from cart.',
+        'total' => $total
+    ], 200);
+}
 
 
-    }
-
-    public function viewCart(Request $request)
+    Public function viewCart(Request $request)
 {
     $cartId = $request->query('cart_id');
-    $cart = Cart::with('items.product')->find($cartId);
-
-    if (!$cart) {
-        return response()->json(['error' => 'Cart not found.'], 404);
+    $cart = Cart::with('shoppingDetails.product')->find($cartId);
+    If (!$cart) {
+        Return response()->json(['error' => 'Cart not found.'], 404);
     }
 
+    // Calculer le total
+    $total = $cart->shoppingDetails()->sum(DB::raw('quantity * unit_price'));
+
+    Return response()->json([
+        'cart' => $cart,
+        'total' => $total
+    ], 200);
 }
+
+
+public function getShoppingCartTotal(string $id){
+
+    $shoppingCartTotal = 0;
+
+    return response()->json($shoppingCartTotal, 200);
+}
+
 }

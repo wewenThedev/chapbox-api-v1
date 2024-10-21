@@ -35,38 +35,50 @@ class CartController extends Controller
     public function index()
     {
         //
+        //return Cart::all();
+        return Cart::paginate(2);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCartRequest $request)
     {
         //
+        $cart = Cart::create($request->validated());
+        return response()->json($cart, 201);
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id /*Cart $cart*/)
     {
-        //
+        $cart = Cart::findOrFail($id);
+        return $cart;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCartRequest $request, string $id /*Cart $cart*/)
     {
-        //
+        $cart = Cart::findOrFail($id);
+        $cart->update($request->validated());
+        return response()->json($cart);
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id /*Cart $cart*/)
     {
-        //
+        $cart = Cart::findOrFail($id);
+        $cart->delete();
+        return response()->json(null, 204);
+
     }
 
 }

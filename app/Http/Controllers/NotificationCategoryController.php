@@ -18,7 +18,8 @@ class NotificationCategoryController extends Controller
     public function index()
     {
         //
-        return NotificationCategory::all();
+        //return Category::all();
+        return NotificationCategory::paginate(4);
     }
 
     /**
@@ -35,18 +36,18 @@ class NotificationCategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(/*string $id*/ NotificationCategory $notificationCategory)
+    public function show(string $id /*Category $notificationCategory*/)
     {
-        //
+        $notificationCategory = NotificationCategory::findOrFail($id);
         return $notificationCategory;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNotificationCategoryRequest $request, /*string $id*/ NotificationCategory $notificationCategory)
+    public function update(UpdateNotificationCategoryRequest $request, string $id /*Category $notificationCategory*/)
     {
-        //
+        $notificationCategory = NotificationCategory::findOrFail($id);
         $notificationCategory->update($request->validated());
         return response()->json($notificationCategory);
 
@@ -55,9 +56,9 @@ class NotificationCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(/*string $id*/ NotificationCategory $notificationCategory)
+    public function destroy(string $id /*Category $notificationCategory*/)
     {
-        //
+        $notificationCategory = NotificationCategory::findOrFail($id);
         $notificationCategory->delete();
         return response()->json(null, 204);
 

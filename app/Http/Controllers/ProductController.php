@@ -141,21 +141,20 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(/*string $id*/ Product $product)
+    public function show(string $id /*Product $product*/)
     {
-        //
-        //$product = Product::findOrFail($id);
+        $product = Product::findOrFail($id);
         return $product;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, /*string $id*/ Product $product)
+    public function update(UpdateProductRequest $request, string $id /*Product $product*/)
     {
-        $this->authorize('update', $product);
 
-        //$product = Product::findOrFail($id);
+        $product = Product::findOrFail($id);
+        $this->authorize('update', $product);
 
         $product->update($request->validated());
         return response()->json($product);

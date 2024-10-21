@@ -18,7 +18,8 @@ class NotificationController extends Controller
     public function index()
     {
         //
-        return Notification::all();
+        //return Notification::all();
+        return Notification::paginate(2);
     }
 
     /**
@@ -35,18 +36,18 @@ class NotificationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(/*string $id*/ Notification $notification)
+    public function show(string $id /*Notification $notification*/)
     {
-        //
+        $notification = Notification::findOrFail($id);
         return $notification;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateNotificationRequest $request, /*string $id*/ Notification $notification)
+    public function update(UpdateNotificationRequest $request, string $id /*Notification $notification*/)
     {
-        //
+        $notification = Notification::findOrFail($id);
         $notification->update($request->validated());
         return response()->json($notification);
 
@@ -55,9 +56,9 @@ class NotificationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(/*string $id*/ Notification $notification)
+    public function destroy(string $id /*Notification $notification*/)
     {
-        //
+        $notification = Notification::findOrFail($id);
         $notification->delete();
         return response()->json(null, 204);
 

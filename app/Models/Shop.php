@@ -12,6 +12,10 @@ class Shop extends Model
 
     protected $fillable = ['city', 'phone', 'address_id', 'supermarket_id', 'shop_manager_id'];
 
+    public function getFullName(){
+        //with shop name and weight
+    }
+
     public function address()
     {
         return $this->belongsTo(Address::class);
@@ -36,4 +40,5 @@ class Shop extends Model
     {
         return $this->belongsToMany(Product::class, 'shop_product')->withPivot('price', 'stock')->withTimestamps();
     }
+
 }

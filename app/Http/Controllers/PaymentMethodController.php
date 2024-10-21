@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+
+
+use App\Http\Requests\StorePaymentMethodRequest;
+use App\Http\Requests\UpdatePaymentMethodRequest;
 
 class PaymentMethodController extends Controller
 {
 
-    public function generatePaymentMethodLogoFilename($paymentMethod) {
+    public function generatePaymentMethodMethodLogoFilename($paymenMethodMethod) {
         $timestamp = time();
-        $extension = $this->getFileExtension($paymentMethod->logo); // Ex : .png, .jpg
-        return 'payment_method_logo_' . $paymentMethod->id . '_' . $timestamp . $extension;
+        $extension = $this->getFileExtension($paymenMethodMethod->logo); // Ex : .png, .jpg
+        return 'PaymentMethod_method_logo_' . $paymenMethodMethod->id . '_' . $timestamp . $extension;
     }
     
     /**
@@ -19,37 +24,49 @@ class PaymentMethodController extends Controller
     public function index()
     {
         //
+        //return PaymentMethod::all();
+        return PaymentMethod::paginate(2);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePaymentMethodRequest $request)
     {
         //
+        $paymenMethod = PaymentMethod::create($request->validated());
+        return response()->json($paymenMethod, 201);
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id /*PaymentMethod $paymenMethod*/)
     {
-        //
+        $paymenMethod = PaymentMethod::findOrFail($id);
+        return $paymenMethod;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdatePaymentMethodRequest $request, string $id /*PaymentMethod $paymenMethod*/)
     {
-        //
+        $paymenMethod = PaymentMethod::findOrFail($id);
+        $paymenMethod->update($request->validated());
+        return response()->json($paymenMethod);
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id /*PaymentMethod $paymenMethod*/)
     {
-        //
+        $paymenMethod = PaymentMethod::findOrFail($id);
+        $paymenMethod->delete();
+        return response()->json(null, 204);
+
     }
 }

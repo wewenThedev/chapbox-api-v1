@@ -36,18 +36,18 @@ class ProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(/*string $id*/ Profile $profile)
+    public function show(string $id /*Profile $profile*/)
     {
-        //
+        $profile = Profile::findOrFail($id);
         return $profile;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProfileRequest $request, /*string $id*/ Profile $profile)
+    public function update(UpdateProfileRequest $request, string $id /*Profile $profile*/)
     {
-        //
+        $profile = Profile::findOrFail($id);
         $profile->update($request->validated());
         return response()->json($profile);
 
@@ -56,9 +56,9 @@ class ProfileController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(/*string $id*/ Profile $profile)
+    public function destroy(string $id /*Profile $profile*/)
     {
-        //
+        $profile = Profile::findOrFail($id);
         $profile->delete();
         return response()->json(null, 204);
 
