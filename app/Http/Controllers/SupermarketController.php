@@ -29,6 +29,18 @@ class SupermarketController extends Controller
      */
     public function index()
     {
+        Supermarket::created([
+            'id' => ,
+            'name' => ,
+            'description' => ,
+            'denomination' => ,
+            'rccm' => ,
+            'ifu' => ,
+            'website' => ,
+            'address_id' => ,
+            'logo_id' => ,
+            'market_manager_id' => ,
+        ]);
         if(Auth::check()){
             if (auth()->user()->role == 'manager') {
                 $supermarkets = Supermarket::where('manager_id', auth()->id())->get();

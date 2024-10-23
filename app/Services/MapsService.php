@@ -9,7 +9,12 @@ use App\Http\Controllers\AddressController;
 
 class MapsService{
     
-    private String $apiKey ='';
+    protected /*string*/ $apiKey;
+
+    Public function __construct()
+    {
+        $this->apiKey = config('services.google_maps.api_key');
+    }
 
 
     public function reverseGeocode($lat, $lng)

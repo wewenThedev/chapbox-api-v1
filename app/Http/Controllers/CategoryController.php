@@ -16,7 +16,54 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        Category::create([
+            'name' => 'Produits frais',
+        ]);
+        Category::create([
+            'name' => 'Produits laitiers',
+        ]);
+        Category::create([
+            'name' => 'Fruits et légumes',
+        ]);
+        Category::create([
+            'name' => 'Produits surgelés',
+        ]);Category::create([
+            'name' => 'Sauces et vinaigrettes',
+        ]);
+        Category::create([
+            'name' => 'Huiles Végétales',
+        ]);
+        Category::create([
+            'name' => 'Bonbons et sucreries',
+        ]);
+        Category::create([
+            'name' => 'Conserves',
+        ]);
+        Category::create([
+            'name' => 'Boissons alcoolisées',
+        ]);
+        Category::create([
+            'name' => 'Boissons non alcoolisées',
+        ]);
+        Category::create([
+            'name' => 'Hygiène',
+        ]);
+        Category::create([
+            'name' => 'Électroménagers',
+        ]);
+        Category::create([
+            'name' => 'Jouets',
+        ]);
+        Category::create([
+            'name' => 'Vêtements',
+        ]);
+        Category::create([
+            'name' => 'Boulangerie et Patisserie',
+        ]);
+        Category::create([
+            'name' => 'Électronique',
+        ]);
+
         //return Category::all();
         return Category::paginate(2);
     }

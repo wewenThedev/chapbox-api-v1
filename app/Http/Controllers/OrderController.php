@@ -34,7 +34,7 @@ class OrderController extends Controller
     {
         //
         if (auth()->user()->role == 'manager') {
-            $orders = Order::where('Order_id', auth()->user()->Order_id)->get();
+            $orders = Order::where('Order_id', auth()->user()->order_id)->get();
         } else {
             $orders = Order::all();
         }

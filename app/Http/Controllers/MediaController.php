@@ -57,9 +57,14 @@ class MediaController extends Controller
      */
     public function index()
     {
-        //
+        Media::create([
+            'name' => ,
+            'url' => ,
+            'type' => ,
+            'description' => ,
+        ]);
         //return Media::all();
-        return Media::paginate(2);
+        return response()->json(Media::paginate(2), 200);
     }
 
     /**

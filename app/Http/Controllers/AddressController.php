@@ -13,15 +13,42 @@ use App\Models\User;
 
 class AddressController extends Controller
 {
-    protected MapsService $mapsService;
+    protected /*MapsService*/ $mapsService;
+    public function __construct(MapsService $mapsService)
+    {
+        $this->mapsService = $mapsService;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-        //return Address::all();
-        return Address::paginate(2);
+        Address::create([
+            'name' => 'Siège Erevan',
+            'fullAddress' => 'Cotonou à préciser',
+            'latitude' => 6.356737,
+            'longitude' => 2.440927,
+        ]);
+
+        Address::create([
+            'name' => 'Siège Mont Sinaï',
+            'fullAddress' => 'Cotonou à préciser',
+            'latitude' => 6.365976,
+            'longitude' => 2.404382,
+        ]);
+
+        Address::create([
+            'name' => 'Siège WorldMarket',
+            'fullAddress' => 'Cotonou à préciser',
+            'latitude' => 6.371918,
+            'longitude' => 2.386040,
+        ]);
+
+        $address = Address::all();
+        return response()->json($address, 200);
+        //return Address::paginate(2);
     }
 
     /**
@@ -32,7 +59,6 @@ class AddressController extends Controller
         //
         $address = Address::create($request->validated());
         return response()->json($address, 201);
-
     }
 
     /**
@@ -52,7 +78,6 @@ class AddressController extends Controller
         $address = Address::findOrFail($id);
         $address->update($request->validated());
         return response()->json($address);
-
     }
 
     /**
@@ -63,7 +88,6 @@ class AddressController extends Controller
         $address = Address::findOrFail($id);
         $address->delete();
         return response()->json(null, 204);
-
     }
 
     /*
@@ -77,66 +101,64 @@ class AddressController extends Controller
 */
 
     public function reverseGeocode(Request $request)
-{
-    $lat = $request->input('lat');
-    $lng = $request->input('lng');
-    If (!$lat || !$lng) {
-        return response()->json(['error' => 'Latitude and Longitude parameters are required'], 400);
+    {
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        if (!$lat || !$lng) {
+            return response()->json(['error' => 'Latitude and Longitude parameters are required'], 400);
+        }
+
+        $addressData = $this->mapsService->reverseGeocode($lat, $lng);
+        return response()->json($addressData);
     }
 
-    $addressData = $this->mapsService->reverseGeocode($lat, $lng);
-    return response()->json($addressData);
-}
+    public function nearbyPlaces(Request $request)
+    {
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        $radius = $request->input('radius', 1000); // rayon par défaut 1000 mètres
+        $type = $request->input('type', 'restaurant'); // type de lieu par défaut “restaurant”
 
-public function nearbyPlaces(Request $request)
-{
-    $lat = $request->input('lat');
-    $lng = $request->input('lng');
-    $radius = $request->input('radius', 1000); // rayon par défaut 1000 mètres
-    $type = $request->input('type', 'restaurant'); // type de lieu par défaut “restaurant”
+        if (!$lat || !$lng) {
+            return response()->json(['error' => 'Latitude and Longitude parameters are required'], 400);
+        }
 
-    If (!$lat || !$lng) {
-        Return response()->json(['error' => 'Latitude and Longitude parameters are required'], 400);
+        $places = $this->mapsService->getNearbyPlaces($lat, $lng, $radius, $type);
+        return response()->json($places);
     }
 
-    $places = $this->mapsService->getNearbyPlaces($lat, $lng, $radius, $type);
-    Return response()->json($places);
-}
+    public function getDirections(Request $request)
+    {
+        $origin = $request->input('origin');
+        $destination = $request->input('destination');
 
-public function getDirections(Request $request)
-{
-    $origin = $request->input('origin');
-    $destination = $request->input('destination');
+        if (!$origin || !$destination) {
+            return response()->json(['error' => 'Origin and Destination parameters are required'], 400);
+        }
 
-    If (!$origin || !$destination) {
-        Return response()->json(['error' => 'Origin and Destination parameters are required'], 400);
+        $directions = $this->mapsService->getDirections($origin, $destination);
+        return response()->json($directions);
     }
 
-    $directions = $this->mapsService->getDirections($origin, $destination);
-    Return response()->json($directions);
-}
+    public function textSearch(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) {
+            return response()->json(['error' => 'Query parameter is required'], 400);
+        }
 
-public function textSearch(Request $request)
-{
-    $query = $request->input('query');
-    If (!$query) {
-        Return response()->json(['error' => 'Query parameter is required'], 400);
+        $places = $this->mapsService->textSearch($query);
+        return response()->json($places);
     }
 
-    $places = $this->mapsService->textSearch($query);
-    Return response()->json($places);
-}
+    public function placeDetails(Request $request)
+    {
+        $placeId = $request->input('place_id');
+        if (!$placeId) {
+            return response()->json(['error' => 'Place ID parameter is required'], 400);
+        }
 
-public function placeDetails(Request $request)
-{
-    $placeId = $request->input('place_id');
-    If (!$placeId) {
-        Return response()->json(['error' => 'Place ID parameter is required'], 400);
+        $placeDetails = $this->mapsService->getPlaceDetails($placeId);
+        return response()->json($placeDetails);
     }
-
-    $placeDetails = $this->mapsService->getPlaceDetails($placeId);
-    Return response()->json($placeDetails);
-}
-
-
 }
