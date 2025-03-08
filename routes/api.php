@@ -30,6 +30,9 @@ use App\Http\Controllers\ShopController;
 //
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ManagerDashboardController;
+use App\Models\PaymentMethod;
+use App\Models\ShopProduct;
+use Illuminate\Routing\Route as RoutingRoute;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +59,7 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 Route::post('/register/admin-manager', [AuthController::class, 'registerAdminOrManager'])->name('register.dashboard');
 Route::post('/register/customer', [AuthController::class, 'registerCustomer'])->name('register.customer');
 
-Route::post('/login/admin-manager', [AuthController::class, 'loginAdminOrController'])->name('login.dashboard');
+Route::post('/login/admin-manager', [AuthController::class, 'loginAdminOrManager'])->name('login.dashboard');
 Route::post('/login/customer', [AuthController::class, 'loginCustomer'])->name('login.customer');
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
@@ -65,9 +68,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::apiResource('users', UserController::class);
 //Route::resource('users', UserController::class);
 
+Route::get('users/{id}/my-cart', [UserController::class, 'getUserCartProducts']);
+Route::get('users/{id}/orders-history', [UserController::class, 'getUserOrdersHistory']);
+
+
 // Routes pour les commandes
 Route::apiResource('orders', OrderController::class);
-//Route::resource('orders', OrderController::class);
+Route::post('orders/new', [OrderController::class, 'placeOrder']);
+Route::put('orders/{orderId}/update-status', [OrderController::class, 'updateOrderStatus']);
+Route::put('orders/{orderId}/cancel', [OrderController::class, 'cancelOrder']);
 
 //Route pour les adresses
 /*Route::apiResource('addresses', [AddressController::class]);
@@ -89,6 +98,14 @@ Route::apiResource('brands', BrandController::class);
 Route::apiResource('media', MediaController::class);
 //Route::resource('media', MediaController::class);
 
+//-
+Route::get('media/create/addImages', function(){
+    return view('pages.addImages');
+});
+//Route::post('media/store',  [MediaController::class, 'store']);
+Route::post('media/store',  [PaymentMethodController::class, 'store']);
+
+
 // Routes pour les notifications
 Route::apiResource('notifications', NotificationController::class);
 //Route::resource('notifications', NotificationController::class);
@@ -109,9 +126,19 @@ Route::apiResource('payment-methods', PaymentMethodController::class);
 Route::apiResource('carts', CartController::class);
 //Route::resource('carts', CartController::class);
 
+Route::post('carts/{cartId}/update-product-in-cart', [CartController::class, 'updateProductInCart']);
+Route::get('carts/{cartId}/total-cost', [CartController::class, 'getCartTotal']);
+
+//gestion du panier
+Route::post('/cart/create', [CartController::class, 'createCart']);
+Route::post('/cart/add', [CartController::class, 'addItemToCart']);
+Route::post('/cart/remove', [CartController::class, 'removeItemFromCart']);
+Route::get('/cart', [CartController::class, 'viewCart']);
+
 // Routes pour les détails de shopping
 Route::apiResource('shopping-details', ShoppingDetailsController::class);
 //Route::resource('shopping-details', ShoppingDetailsController::class);
+//Route::get('', []);
 
 // Routes pour les promotions
 Route::resource('promos', PromoController::class);
@@ -136,6 +163,15 @@ Route::apiResource('supermarkets', SupermarketController::class);
 // Routes pour les shops - boutiques
 Route::apiResource('shops', ShopController::class);
 
+//Route pour voir la liste de chaque shop avec ses produits
+Route::get('shops/products', [ShopProductController::class, 'index']);
+
+//Route pour voir les produits qui concernent une shop en particulier
+Route::get('shops/{shopId}/products', [ShopProductController::class, 'getProductsByShop']);
+Route::get('shops/{shopId}/products/{productId}', [ShopProductController::class, 'show']);
+
+Route::delete('shops/{shopId}/products/{productId}', [ShopProductController::class, 'destroy']);
+
 //routes avec middleware
 
 /*
@@ -153,7 +189,7 @@ Route::middleware('auth:sanctum')->group(function() {
     });  
 });*/
 
-Route::middleware('auth:sanctum')->group(function() {
+/*Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
         //Route:resource à changer avec Route:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
         Route::resource('shops', ShopController::class);
@@ -166,9 +202,9 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:customer'], function() {
         Route::get('shops', [ShopController::class, 'index']);
     });
-});
+});*/
 
-Route::middleware('auth:sanctum')->group(function() {
+/*Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
         Route::resource('products', ProductController::class);
     });
@@ -181,7 +217,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:customer'], function() {
         Route::get('products', [ProductController::class, 'index']);
     });
-});
+});*/
+
+//Route::get('products', [ProductController::class, 'index']);
+        
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
@@ -199,14 +238,6 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 });
 //Regénérer le PDF du dictionnaire de données de la BD chapbox
-
-//gestion du panier
-
-Route::post('/cart/create', [CartController::class, 'createCart']);
-Route::post('/cart/add', [CartController::class, 'addItemToCart']);
-Route::post('/cart/remove', [CartController::class, 'removeItemFromCart']);
-Route::get('/cart', [CartController::class, 'viewCart']);
-
 
 //dashboard Admin
 
@@ -230,6 +261,9 @@ Route::middleware('auth:sanctum')->group(function() {
 
 Route::get('/fedapay/token', [PaymentController::class, 'generatePaymentToken']);
 Route::post('/fedapay/payment', [PaymentController::class, 'processPayment']);
+
+
+
 /*use Barryvdh\DomPDF\Facade as PDF;
 
 public function generateInvoice($orderId)

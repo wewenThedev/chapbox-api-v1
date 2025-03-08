@@ -16,56 +16,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        Category::create([
-            'name' => 'Produits frais',
-        ]);
-        Category::create([
-            'name' => 'Produits laitiers',
-        ]);
-        Category::create([
-            'name' => 'Fruits et légumes',
-        ]);
-        Category::create([
-            'name' => 'Produits surgelés',
-        ]);Category::create([
-            'name' => 'Sauces et vinaigrettes',
-        ]);
-        Category::create([
-            'name' => 'Huiles Végétales',
-        ]);
-        Category::create([
-            'name' => 'Bonbons et sucreries',
-        ]);
-        Category::create([
-            'name' => 'Conserves',
-        ]);
-        Category::create([
-            'name' => 'Boissons alcoolisées',
-        ]);
-        Category::create([
-            'name' => 'Boissons non alcoolisées',
-        ]);
-        Category::create([
-            'name' => 'Hygiène',
-        ]);
-        Category::create([
-            'name' => 'Électroménagers',
-        ]);
-        Category::create([
-            'name' => 'Jouets',
-        ]);
-        Category::create([
-            'name' => 'Vêtements',
-        ]);
-        Category::create([
-            'name' => 'Boulangerie et Patisserie',
-        ]);
-        Category::create([
-            'name' => 'Électronique',
-        ]);
-
+        $categories = Category::all();
         //return Category::all();
-        return Category::paginate(2);
+        return response()->json(['categories' => $categories], 200);
     }
 
     /**
@@ -82,7 +35,7 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id /*Category $category*/)
+    public function show($id)
     {
         $category = Category::findOrFail($id);
         return $category;
@@ -91,11 +44,11 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, string $id /*Category $category*/)
+    public function update(UpdateCategoryRequest $request, $id)
     {
         $category = Category::findOrFail($id);
         $category->update($request->validated());
-        return response()->json($category);
+        return response()->json($category, 200);
 
     }
 
@@ -107,6 +60,10 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $category->delete();
         return response()->json(null, 204);
+
+    }
+
+    public function getCategoriesByStock(){
 
     }
 }

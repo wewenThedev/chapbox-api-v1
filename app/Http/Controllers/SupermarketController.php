@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Auth;
 
 class SupermarketController extends Controller
 {
+
+    /// scheduled task to updateSUpermarketInDbAddress(){}
+
+
+    ///search a supermarket by name or address task from maps()
+
     //Penser à exploiter les transactions pour garantir l'intégrité des données
     public function generateSupermarketLogoFilename($supermarket)
     {
@@ -29,27 +35,29 @@ class SupermarketController extends Controller
      */
     public function index()
     {
-        Supermarket::created([
-            'id' => ,
-            'name' => ,
-            'description' => ,
-            'denomination' => ,
-            'rccm' => ,
-            'ifu' => ,
-            'website' => ,
-            'address_id' => ,
-            'logo_id' => ,
-            'market_manager_id' => ,
+        /*Supermarket::create([
+            'name' => 'Erevan',
+            'address_id' => 2,
+            'logo_id' => 1,
+            'market_manager_id' => 2,
         ]);
+        Supermarket::create([
+            'name' => 'Mont  Sinai',
+            'address_id' => 3,
+            'logo_id' => 5,
+            'market_manager_id' => 8,
+        ]);*/
         if(Auth::check()){
             if (auth()->user()->role == 'manager') {
                 $supermarkets = Supermarket::where('manager_id', auth()->id())->get();
+                //$supermarkets = Supermarket::where('manager_id', auth()->id())->paginate(3);
             } else {
                 //$supermarkets = Supermarket::all();
                 //$supermarkets = Supermarket::paginate(5);
             }
         }else{
             //return response()->json('please go and connect yourself');
+            //$supermarkets = Supermarket::paginate(3);
             $supermarkets = Supermarket::all();
         }
         

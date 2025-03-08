@@ -21,8 +21,17 @@ class UpdateOrderRequest extends FormRequest
      */
     public function rules(): array
     {
+        //dd($_REQUEST);
         return [
-            //
+            /*
+            'guest_firstname',
+            'guest_lastname',
+            'guest_phone',
+            'guest_email',*/
+            //'order_id' => 'required|exists:orders,id',
+            //correct this validation rule
+            //'status' => 'required|string|in:pending,processing,failed,successful'
+            'status' => 'required|string'
         ];
     }
 }

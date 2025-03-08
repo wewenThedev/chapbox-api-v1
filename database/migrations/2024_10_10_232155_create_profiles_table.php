@@ -17,6 +17,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            /*$table->timestamps('created_at')->useCurrent()->change();
+            $table->timestamps('updated_at')->useCurrent()->useCurrentOnUpdate()->change();*/
+            //$table->timestamps()->useCurrent()->change();
         });
     }
 

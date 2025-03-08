@@ -10,7 +10,13 @@ class PaymentMethod extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'description', 'logo_id', 'terms_conditions', 'fees'];
+    protected $fillable = [
+        'name', 
+        'description', 
+        'logo_id', 
+        'terms_conditions', 
+        'fees'
+    ];
 
     public function logo()
     {

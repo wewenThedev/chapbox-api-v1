@@ -13,7 +13,8 @@ class Shop extends Model
     protected $fillable = ['city', 'phone', 'address_id', 'supermarket_id', 'shop_manager_id'];
 
     public function getFullName(){
-        //with shop name and weight
+        //with supermarket name and city
+        return $this->supermarket->name.' '.$this->city;
     }
 
     public function address()

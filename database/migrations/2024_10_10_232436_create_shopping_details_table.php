@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('shopping_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cart_id')->constrained('carts')->onDelete('cascade');;
+            $table->foreignId('cart_id')->constrained('carts')->onDelete('cascade');
+            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('shop_id')->constrained('shops')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->timestamp('added_at')->nullable();
+            $table->timestamp('added_at')/*->nullable()*/;
             $table->integer('quantity');
             $table->decimal('cost', 8, 2);
             $table->timestamps();
             $table->softDeletes();
+            //$table->unique([]);
         });
     }
 
@@ -30,6 +32,12 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['product_id', 'shop_id', 'cart_id']);
+        Schema::table('shopping_details', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('cart_id');
+            $table->dropConstrainedForeignId('order_id');
+            $table->dropConstrainedForeignId('shop_id');
+            $table->dropConstrainedForeignId('product_id');
+        });
         Schema::dropIfExists('shopping_details');
     }
 };

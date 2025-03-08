@@ -23,6 +23,11 @@ class UpdatePaymentMethodRequest extends FormRequest
     {
         return [
             //
+            'name' => 'string|max:50',
+            'description' => 'string|max:255',
+            'logo_id' => 'exists,media:id',
+            'terms_conditions' => 'string',
+            'fees' => 'decimal'
         ];
     }
 }

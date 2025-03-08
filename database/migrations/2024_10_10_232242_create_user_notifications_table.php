@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('user_notifications', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-    $table->foreignId('notification_id')->constrained('notifications')->onDelete('cascade');
-    $table->timestamp('sent_at')->nullable();
-    $table->primary(['user_id', 'notification_id']);
+            $table->foreignId('notification_id')->constrained('notifications')->onDelete('cascade');
+            $table->timestamp('sent_at')->nullable();
+            $table->primary(['user_id', 'notification_id']);
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +27,10 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['notification_id', 'user_id']);
+        Schema::table('user_notifications', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('notification_id');
+            $table->dropConstrainedForeignId('user_id');
+        });
         Schema::dropIfExists('user__notifications');
     }
 };

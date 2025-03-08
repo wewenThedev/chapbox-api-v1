@@ -29,6 +29,9 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['logo_id']);
+        Schema::table('payment_methods', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('logo_id');
+        });
         Schema::dropIfExists('payment_methods');
     }
 };

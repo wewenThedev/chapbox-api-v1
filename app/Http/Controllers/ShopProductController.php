@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ShopProduct;
 use Illuminate\Http\Request;
 
+use function Laravel\Prompts\error;
+
 class ShopProductController extends Controller
 {
     /**
@@ -13,17 +15,27 @@ class ShopProductController extends Controller
     public function index()
     {
         //
-        //return ShopProduct::all();
-        return ShopProduct::paginate(5);
+        $shopProducts = ShopProduct::all();
+        return response()->json($shopProducts, 200);
+
+        //return ShopProduct::paginate(5);
+    }
+
+    public function getProductsByShop($shopId)
+    {
+        $shopProduct = ShopProduct::with(['shop', 'product'])->where('shop_id', $shopId)->get();
+        //dd($shopProduct);
+        return response()->json($shopProduct, 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($shopId, $productId)
     {
-        $shopProduct = ShopProduct::findOrFail($id);
-        return $shopProduct;
+        $shopProduct = ShopProduct::with(['shop', 'product'])->where('shop_id', $shopId)->where('product_id', $productId)->get();
+        //dd($shopProduct);
+        return response()->json($shopProduct, 200);
     }
 
 
@@ -45,19 +57,32 @@ class ShopProductController extends Controller
     {
         $shopProduct = ShopProduct::findOrFail($id);
         $shopProduct->update($request->validated());
-        return response()->json($shopProductMedia);
+        return response()->json($shopProduct);
 
     }
 
     /*
      * Remove the specified resource from storage.
-     *
-    public function destroy(string $id)
+     */
+    public function destroy($shopId, $productId)
     {
-        $shopProduct = ShopProduct::findOrFail($id);
-        $shopProduct->delete();
-        return response()->json(null, 204);
-
+        $shopProduct = ShopProduct::where('shop_id', $shopId)->where('product_id', $productId)->get();
+        $removedShopProduct = $shopProduct;
+        //dd($shopProduct);
+        if (!$shopProduct) {
+            return response()->json(["error" => "Produit introuvable"], 404);
+        } else {
+            $shopProduct->delete();
+            //dd($shopProduct);
+            return response()->json(["message" => "Le produit ".$shopProduct->product->name." du supermarché ".$shopProduct->shop->fullName." supprimé avec succès"], 204);
+        }
     }
-*/
+
+    public function getNewProductsByShop($shopId){
+        // to write
+    }
+
+    public function getNewProducts(){
+        // to write
+    }
 }

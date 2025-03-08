@@ -11,7 +11,8 @@ class StoreBrandRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        //return false;
+        return true;
     }
 
     /**
@@ -23,6 +24,12 @@ class StoreBrandRequest extends FormRequest
     {
         return [
             //
+            'name' => 'required|string|max:255',
+            'description' => 'string|max:500',
+            //'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo_id' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            //'url' => 'required|url',
+
         ];
     }
 }

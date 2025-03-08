@@ -19,16 +19,24 @@ class ShopController extends Controller
     public function generateShopImageFilename($shop) {
         $timestamp = time();
         $extension = $this->getFileExtension($shop->image); // Ex : .png, .jpg
-        Return 'shop_image_' . $shop->id . '_' . $timestamp . $extension;
+        return 'shop_image_' .$shop->getFullName().'_'. $shop->id . '_' . $timestamp . $extension;
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-        //return Shop::all();
-        return Shop::paginate(2);
+        /*Shop::create([
+            'city' => 'Cotonou',
+            'phone' => '21212121',
+            'address_id' => 5,
+            'supermarket_id' => 1,
+            'shop_manager_id' => 2,
+        ]);*/
+        
+        $shops = Shop::all();
+        //return Shop::paginate(2);
+        return response()->json($shops, 200);
     }
 
     /**

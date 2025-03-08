@@ -29,6 +29,11 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['address_id', 'shop_manager_id', 'supermarket_id']);
+        Schema::table('shops', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('address_id');
+            $table->dropConstrainedForeignId('shop_manager_id');
+            $table->dropConstrainedForeignId('supermarket_id');
+        });
         Schema::dropIfExists('shops');
     }
 };

@@ -25,7 +25,7 @@ class AddressController extends Controller
      */
     public function index()
     {
-        Address::create([
+        /*Address::create([
             'name' => 'Siège Erevan',
             'fullAddress' => 'Cotonou à préciser',
             'latitude' => 6.356737,
@@ -44,7 +44,7 @@ class AddressController extends Controller
             'fullAddress' => 'Cotonou à préciser',
             'latitude' => 6.371918,
             'longitude' => 2.386040,
-        ]);
+        ]);*/
 
         $address = Address::all();
         return response()->json($address, 200);

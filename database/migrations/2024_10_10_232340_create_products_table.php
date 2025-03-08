@@ -20,8 +20,12 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('container_type')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes()->default(null);
         });
+
+        /*Schema::table('products', function(Blueprint $table){
+$table->softDeletes();
+        });*/
     }
 
     /**
@@ -29,7 +33,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //Schema::dropForeignId(['brand_id', 'category_id']);
+        //Schema::disableForeignKeyConstraints(['brand_id', 'category_id']);
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('brand_id');
+            $table->dropConstrainedForeignId('category_id');
+        });
+
         Schema::dropIfExists('products');
     }
 };

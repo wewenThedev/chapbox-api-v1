@@ -21,11 +21,14 @@ class UpdateShoppingDetailsRequest extends FormRequest
      */
     public function rules(): array
     {
+        //dd($_REQUEST);
         return [
-            'product_id' => 'required|exists:products,id',
+            /*'product_id' => 'required|exists:products,id',
             'shop_id' => 'required|exists:shops,id',
+            'cart_id' => 'required|exists:carts,id',*/
+            'shopping_detail_id' => 'required|exists:shopping_details,id',
             'quantity' => 'required|integer|min:1',
-            'cart_id' => 'required|exists:carts,id',
+            'increase' => 'integer',
         ];
     }
 }

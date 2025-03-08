@@ -24,7 +24,8 @@ class UpdateMediaRequest extends FormRequest
         return [
              //
             'name' => 'sometimes|string|max:255',
-            'url' => 'sometimes|url',
+            'url' => 'image|mimes:jpeg,png,jpg|max:2048',
+            //'url' => 'sometimes|url',
             'type' => 'sometimes|string|max:50',
             'description' => 'sometimes|nullable|string|max:500',
 

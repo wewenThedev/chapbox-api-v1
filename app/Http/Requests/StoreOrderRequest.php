@@ -21,12 +21,32 @@ class StoreOrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-            'supermarket_id' => 'required|exists:supermarkets,id',
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|numeric',
+        if(1){
+        //dd($_REQUEST);
 
-        ];
+            return [
+                //
+                //'shopping_details_id' => 'required|array|exists:shopping_details,id',
+                //vérification de l'utilisateur connecté
+                'cart_id' => 'required|exists:carts,id',
+                'user_id' => 'sometimes|exists:users,id',
+                'guest_firstname' => 'sometimes|string|max:255',
+                'guest_lastname' => 'sometimes|string|max:255',
+                'guest_phone' => 'sometimes|string|max:15|unique:users',
+                'guest_email' => 'nullable|email|max:255|unique:users',
+                'total_ht' => 'numeric',
+                /*'shipping_date' => 'required|date',
+                'shipping_address' => 'required|date',*/
+                'recovery_mode'     => 'required|in:pickup,delivery',
+                'payment_method_id' => 'required|exists:payment_methods,id',
+                'shipping_date' => 'required|string|max:255',
+                'shipping_address' => 'required|string|max:255',
+            ];
+        }else{
+            return [
+                'status' => 'error',
+                'errors' => 'message'
+            ];
+        }
     }
 }

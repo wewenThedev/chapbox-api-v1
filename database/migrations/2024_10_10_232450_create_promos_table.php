@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('promos', function (Blueprint $table) {
-            $table->id();$table->string('code');
+            $table->id();
+            $table->string('code');
             $table->text('description')->nullable();
             $table->string('type');
             $table->foreignId('supermarket_id')->nullable()->constrained('supermarkets')->onDelete('cascade');
@@ -28,6 +29,9 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['supermarket_id']);
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('supermarket_id');
+        });
         Schema::dropIfExists('promos');
     }
 };

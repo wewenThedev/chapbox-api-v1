@@ -11,7 +11,12 @@ class StorePaymentMethodRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        //condition sur l'accès - role admin uniquement
+        //if(auth()->check() && auth()->user->profile === 1){
+        return true;
+        /*}else{
+            return false;
+        }*/
     }
 
     /**
@@ -22,7 +27,13 @@ class StorePaymentMethodRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:50',
+            'description' => 'required|string|max:255',
+            //'logo_id' => 'required|exists,media:id',
+            //'logo' => 'required|file',
+            'logo_id' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'terms_conditions' => 'required|string',
+            'fees' => 'required|numeric'
         ];
     }
 }

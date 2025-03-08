@@ -11,7 +11,7 @@ class Address extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'addresses';
-    protected $fillable = ['name', 'fullAddress', 'latitude', 'longitude'];
+    protected $fillable = ['name', 'fullAddress', 'latitude', 'longitude', 'user_id'];
 
     public function supermarkets()
     {
@@ -21,5 +21,10 @@ class Address extends Model
     public function shops()
     {
         return $this->hasMany(Shop::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

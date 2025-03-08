@@ -24,7 +24,9 @@ class StoreMediaRequest extends FormRequest
         return [
             //
             'name' => 'required|string|max:255',
-            'url' => 'required|url',
+            //'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'url' => 'image|mimes:jpeg,png,jpg|max:2048',
+            //'url' => 'required|url',
             'type' => 'required|string|max:50',
             'description' => 'nullable|string|max:500',
 

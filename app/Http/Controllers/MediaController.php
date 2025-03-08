@@ -14,29 +14,37 @@ use App\Models\Supermarket;
 use App\Models\Shop;
 use App\Models\Product;
 use App\Models\PaymentMethod;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Http\File;
 
 class MediaController extends Controller
 {
-    //Algorithme à vérifier mais boff
+    //Algorithme à vérifier mais boff, ça marche pour les images à ajouter après la création de l'objet
 
-    Public function uploadMedia(Request $request, $type, $objectId) {
+    public function uploadMedia(Request $request, $type, $objectId) {
         $file = $request->file('media');
         
-        If ($file->isValid()) {
+        if ($file->isValid()) {
             // Génère le nom du fichier selon le type de média
-            Switch ($type) {
-                Case 'brand':
+            switch ($type) {
+                case 'brand':
                     $object = Brand::find($objectId);
                     $filename = $this->generateBrandLogoFilename($object);
-                    Break;
-                Case 'supermarket':
+                    break;
+                case 'supermarket':
                     $object = Supermarket::find($objectId);
                     $filename = $this->generateSupermarketLogoFilename($object);
-                    Break;
-                Case 'product':
+                    break;
+                case 'shop':
+                    $object = Shop::find($objectId);
+                    $filename = $this->generateShopImageFilename($object);
+                    break;
+                case 'product':
                     $object = Product::find($objectId);
                     $filename = $this->generateProductImageFilename($object);
-                    Break;
+                    break;
                 // Autres cas…
             }
             
@@ -57,14 +65,28 @@ class MediaController extends Controller
      */
     public function index()
     {
+        //https://www.erevanbenin.com/
+        //https://www.supermarchemontsinai.com/
+        //Storage::storeAs(),
+        /*$originalImagePath = 'D:/Projet de soutenance/ressources/logos/docs/logo_fedaPay.png';
+
+        $pathWithoutExtension = explode('.', $originalImagePath, 5);
+        $explodeName = explode('/', $pathWithoutExtension[0],20);
+        $index = count($explodeName);
+        $imageName = $explodeName[$index-1];
+        //$imagePath = Storage::putFileAs('public/uploads/logos', new File($originalImagePath),$imageName);
+        $file = new UploadedFile($originalImagePath, $imageName, $pathWithoutExtension[1]);
+        $imagePath = $file->storeAs('public/uploads/logos',$imageName.'.'.$pathWithoutExtension[1]);
+        //dd($imagePath);
         Media::create([
-            'name' => ,
-            'url' => ,
-            'type' => ,
-            'description' => ,
-        ]);
-        //return Media::all();
-        return response()->json(Media::paginate(2), 200);
+            'name' => $imageName,
+            'url' => $imagePath,
+            'type' => $pathWithoutExtension[1],
+            'description' => '',
+        ]);*/
+        $media = Media::paginate(5);
+        //$media = Media::all();
+        return response()->json($media, 200);
     }
 
     /**

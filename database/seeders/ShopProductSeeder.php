@@ -14,6 +14,6 @@ class ShopProductSeeder extends Seeder
     public function run(): void
     {
         //
-        ShopProduct::factory()->count(5)->create();
+        ShopProduct::factory(50)->create();
     }
 }

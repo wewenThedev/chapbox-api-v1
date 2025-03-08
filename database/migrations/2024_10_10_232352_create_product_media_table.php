@@ -15,6 +15,8 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->foreignId('media_id')->constrained('media')->onDelete('cascade');
             $table->primary(['product_id', 'media_id']);
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +26,10 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['product_id', 'media_id']);
+        Schema::table('product_media', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('product_id');
+            $table->dropConstrainedForeignId('media_id');
+        });
         Schema::dropIfExists('product_media');
     }
 };

@@ -45,11 +45,16 @@ class AdminDashboardController extends Controller
 
     public function salesByDay()
     {
+
+        //by desc
         $salesByDay = Order::selectRaw('DATE(created_at) as date')
-                           ->selectRaw('SUM(total_amount) as daily_sales')
-                           ->groupBy('date')
-                           ->orderBy('date', 'desc')
-                           ->get();
+                        ->selectRaw('SUM(total_amount) as daily_sales')
+                        ->groupBy('date')
+                        ->orderBy('date', 'desc')
+                        ->get();
+
+        //by asc
+
         return response()->json($salesByDay);
     }
 

@@ -24,9 +24,21 @@ class Cart extends Model
         return $this->belongsTo(User::class);
     }
 
-    Public function shoppingDetails()
+    public function shoppingDetails()
     {
         return $this->hasMany(ShoppingDetails::class);
     }
 
+    public function products(){
+        return $this->hasManyThrough(Product::class, ShoppingDetails::class, 'shopping_details_id', 'product_id');
+        //return $this->hasMany(Product::class);
+
+    }
+
+    /*
+    public function products(){
+        return $this->hasMany(ShopProduct::class);
+    }*/
+
+    
 }

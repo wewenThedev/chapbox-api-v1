@@ -34,6 +34,10 @@ return new class extends Migration
     public function down(): void
     {
         //Schema::dropForeignId(['profile_id', 'picture_id']);
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('picture_id');
+            $table->dropConstrainedForeignId('profile_id');
+        });
         Schema::dropIfExists('users');
     }
 };

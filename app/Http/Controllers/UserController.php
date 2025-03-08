@@ -21,10 +21,15 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(?Request $request)
     {
-        //
-        return response()->json(User::all(), 200);
+        $query = User::query();
+
+        //dd(User::with(['profile', 'picture', 'notifications', 'orders'])->get());
+        $users = User::with(['profile', 'picture', 'notifications', 'orders'])->get();
+        //$users = User::all();
+        return response()->json(['users' => $users], 200);
+        
     }
 
     /**
@@ -34,63 +39,101 @@ class UserController extends Controller
     {
         //
         $user = User::create($request->validated());
-        return response()->json($user, 201);
+        return response()->json(['user' => $user], 201);
 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id /*User $user*/)
+    public function show($id)
     {
-        $user = User::findOrFail($id);
-        return $user;
+        //$user = User::with(['profile', 'picture'])->findOrFail($id);
+        $user = User::with(['profile', 'picture', 'notifications', 'orders'])->find($id);
+        //dd($user);
+        if($user){
+            return response()->json(['user' => $user], 200);
+        }else{
+            return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, string $id /*User $user*/)
+    public function update(UpdateUserRequest $request, string $id)
     {
-        $user = User::findOrFail($id);
-        $user->update($request->validated());
-        return response()->json($user);
+        //dd($request->validated());
+        $user = User::with(['profile', 'picture'])->findOrFail($id);
+        if($user){
+            if($user->update($request->validated())){
+                return response()->json(
+                    ['success' => 'Informations de l\'utilisateur modifié avec succès',
+                    'user' => $user
+                    ], 200);
+            }else{
+                return response()->json(['error' => 'Echec de la mise à jour des informations'], 404);
+            }
+        //dd($user);
+        }else{
+            return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+        }
 
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id /*User $user*/)
+    public function destroy($id)
     {
         //
-        $user = User::findOrFail($id);
-        $user->delete();
-        return response()->json(null, 204);
-
+        $user = User::with(['profile', 'picture'])->findOrFail($id);
+        //dd($user);
+        if($user){
+            if($user->delete()){
+                return response()->json(
+                    ['success' => 'Compte utilisateur supprimé avec succès',
+                    'user' => $user
+                    ], 204);
+            }else{
+                return response()->json(['error' => 'Echec de la suppression du compte utilisateur'], 404);
+            }
+        //dd($user);
+        }else{
+            return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+        }
     }
 
-    public function getOrderHistory()
+    public function getUserOrdersHistory($id)
 {
     // Assurez-vous que l'utilisateur est authentifié
     $user = auth()->user();
-
+    //dd($user);
     // Récupérer toutes les commandes de l'utilisateur
-    $orders = Order::where('user_id', $user->id)->with('shoppingDetails')->get();
+    $orders = Order::where('user_id', $id/*$user->id*/)->with('shoppingDetails')->get();
 
-    return response()->json($orders);
+    if($orders){
+            return response()->json(
+                [
+                'orders' => $orders
+                ], 200);
+    }else{
+        return response()->json(['error' => 'Aucune commande passée'], 404);
+    }
 }
 
 
-public function getCartProducts()
+public function getUserCartProducts($id)
 {
     // Assurez-vous que l'utilisateur est authentifié
     $user = auth()->user();
 
+$userCartId = Cart::where('user_id', $id)->pluck('id')[0];
+//dd($userCart);
     // Récupérer les détails du panier
-    $cartDetails = ShoppingDetails::where('cart_id', $user->cart_id)->with('product')->get();
+    $cartDetails = ShoppingDetails::where('cart_id', $userCartId/*$user->cart*/)->with(['product', 'shop'])->get();
 
-    return response()->json($cartDetails);
+    return response()->json(['cartDetails' => $cartDetails], 200);
 }
 
 
@@ -102,7 +145,7 @@ public function getSavedAddresses()
     // Récupérer les adresses sauvegardées de l'utilisateur
     $addresses = Address::where('user_id', $user->id)->get();
 
-    return response()->json($addresses);
+    return response()->json(['addresses' => $addresses]);
 }
 
 
@@ -122,7 +165,7 @@ public function updateSavedAddress(string $id, Request $request)
     // Mettre à jour les informations de l'adresse
     $address->update($request->all());
 
-    return response()->json($address);
+    return response()->json(['address' => $address]);
 }
 
 
@@ -146,7 +189,11 @@ public function getProfilePicture()
     // Récupérer l'image de profil de l'utilisateur
     $profilePicture = Media::find($user->picture_id);
 
-    return response()->json($profilePicture);
+    return response()->json(['profile_picture' => $profilePicture], 200);
+}
+
+public function updateProfilePicture($request){
+//to write
 }
 
 

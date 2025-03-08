@@ -18,6 +18,11 @@ class Media extends Model
         return $this->hasMany(User::class, 'picture_id');
     }
 
+    public function brand()
+    {
+        return $this->has(Brand::class, '');
+    }
+
     public function products()
     {
         return $this->belongsToMany(Product::class, 'product_media');

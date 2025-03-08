@@ -17,9 +17,13 @@ class ProfileController extends Controller
      */
     public function index()
     {
+        //dd(Profile::query());
         //
         //return Profile::all();
-        return Profile::paginate(2);
+        //return Profile::paginate(2);
+
+        $profile = Profile::all();
+        return response()->json($profile, 200);
     }
 
     /**

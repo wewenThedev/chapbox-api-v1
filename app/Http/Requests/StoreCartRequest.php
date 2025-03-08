@@ -23,7 +23,7 @@ class StoreCartRequest extends FormRequest
     {
         return [
             'user_id' => 'unique|exists,users:id',
-            'device_id' => 'string',
+            'device_id' => 'required|string',
         ];
     }
 }
