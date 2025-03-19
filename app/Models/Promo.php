@@ -11,9 +11,16 @@ class Promo extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['code', 'description', 'type', 'supermarket_id', 'discount'];
+// to do add expiry date column to database
+
 
     public function supermarket()
     {
         return $this->belongsTo(Supermarket::class);
+    }
+
+    public function isPromoActive() : bool {
+        //by default
+        return true;
     }
 }

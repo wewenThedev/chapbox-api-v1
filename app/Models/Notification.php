@@ -10,7 +10,7 @@ class Notification extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['message', 'notification_category_id'];
+    protected $fillable = ['message', 'notification_category_id', 'is_read'];
 
     public function category()
     {

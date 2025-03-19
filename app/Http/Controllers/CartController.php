@@ -19,6 +19,12 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
+/*
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
+*/
+
 class CartController extends Controller
 {
     protected $cartService;

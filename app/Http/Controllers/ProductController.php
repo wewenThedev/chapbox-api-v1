@@ -34,8 +34,13 @@ class ProductController extends Controller
         return 'product_image_' . $product->id . '_' . $timestamp . $extension;
     }
 
-    public function getNewProducts(){
+    public function getLatestProducts(){
         // to write
+        $latestProducts = Product::orderBy('created_at', 'desc')->limit(5);
+        
+        //$latestProducts = Product::orderBy('created_at', 'desc')->offset(5);
+        
+        return response()->json($latestProducts, 200);
     }
 
     /**
@@ -58,7 +63,8 @@ class ProductController extends Controller
                 // Récupérer tous les produits avec leurs relations nécessaires
                 //$query = Product::where('manager_id', auth()->id())->get();
 
-                $query = Product::where('manager_id', auth()->id())->get();
+                //$query = Product::where('manager_id', auth()->id())->get();
+                $query = Product::where('manager_id', auth()->id())->paginate(10);
                 dd($query);
 
                 // Filtres de catégories

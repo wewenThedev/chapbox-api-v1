@@ -26,15 +26,9 @@ class ShopController extends Controller
      */
     public function index()
     {
-        /*Shop::create([
-            'city' => 'Cotonou',
-            'phone' => '21212121',
-            'address_id' => 5,
-            'supermarket_id' => 1,
-            'shop_manager_id' => 2,
-        ]);*/
-        
+    
         $shops = Shop::all();
+        //$shops = Shop::paginate(2);
         //return Shop::paginate(2);
         return response()->json($shops, 200);
     }

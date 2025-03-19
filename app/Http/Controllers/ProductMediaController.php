@@ -57,6 +57,7 @@ class ProductMediaController extends Controller
         $images = $request->file('images'); // On attend un tableau d'images
         $mediaItems = [];
 
+        $i=0;
         foreach ($images as $image) {
             // Stockage du fichier image dans le disque "public" dans le dossier "media"
             $path = $image->store('media', 'public');
@@ -72,6 +73,8 @@ class ProductMediaController extends Controller
             // Association du media avec le produit via la table pivot product_media
             $product->media()->attach($media->id);
             $mediaItems[] = $media;
+            /*$mediaItems[$i] = $media;
+            $i++;*/
         }
 
         return response()->json([

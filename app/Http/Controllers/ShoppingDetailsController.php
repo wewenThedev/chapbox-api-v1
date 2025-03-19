@@ -6,6 +6,12 @@ use App\Http\Requests\StoreShoppingDetailsRequest;
 use App\Http\Requests\UpdateShoppingDetailsRequest;
 use Illuminate\Http\Request;
 
+/*
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
+*/
+
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Shop;

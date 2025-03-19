@@ -64,6 +64,22 @@ class AuthController extends Controller
         return response()->json($user, 201);
     }
 
+    /*
+    	Admin
+-	owenAdmin – sysAdmin33
+	Manager
+-	geraldineAgoss – caisseErevan1
+-	maturinDag – superviseurMS2
+
+	User
+-	testSys – testLogin1 - sys@test.com
+-	marcosAd  - testLogin2
+-	claudel – customer45!
+-	 [{"key":"email","value":"toboucharmel7@gmail.com","description":null,"type":"default","enabled":true,"equals":true}] 
+-	
+-	[{"key":"password","value":"designAndCode7","description":null,"type":"default","enabled":true,"equals":true}]
+
+    */
 
     public function loginCustomer(Request $request)
     {

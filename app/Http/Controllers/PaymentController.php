@@ -26,6 +26,7 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
+    //lister tous les paiements
     public function index()
     {
         //
@@ -36,6 +37,7 @@ class PaymentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    //enregistrer un paiement
     public function store(StorePaymentRequest $request)
     {
         //
@@ -47,6 +49,7 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
+    //afficher un paiement
     public function show(string $id /*Payment $payment*/)
     {
         $payment = Payment::findOrFail($id);
@@ -56,6 +59,7 @@ class PaymentController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    //mettre à jour un paiement
     public function update(UpdatePaymentRequest $request, string $id /*Payment $payment*/)
     {
         $payment = Payment::findOrFail($id);

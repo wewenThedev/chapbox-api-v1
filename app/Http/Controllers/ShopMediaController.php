@@ -11,7 +11,7 @@ use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShopMedia;
 
-class ShopMediaMediaController extends Controller
+class ShopMediaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -39,6 +39,9 @@ class ShopMediaMediaController extends Controller
     public function store(StoreShopMediaRequest $request)
     {
         //
+
+
+
         $ShopMediaMedia = ShopMedia::create($request->validated());
         return response()->json($ShopMediaMedia, 201);
 
@@ -91,6 +94,22 @@ class ShopMediaMediaController extends Controller
         ], 200);
     }
 
+    //pour une boutique précise
+    public function viewAssociateNewMediaToOneShop($shopId){
+        $shop = Shop::find($shopId);
+        if (!$shop) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Boutique introuvable.'
+            ], 404);
+        }
+    }
+    public function viewAssociateNewMediaToShop(){
+        $shops = Shop::all();
+        dd($shops);
+        return view('pages.addImages', ['shops' => $shops]);
+    }
+
     /**
      * Associe de nouveaux médias à une boutique.
      * La requête doit contenir un tableau de fichiers sous la clé "images".
@@ -100,9 +119,9 @@ class ShopMediaMediaController extends Controller
      * @param  StoreShopMediaRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function associateNewMediaToShop($shopId, StoreShopMediaRequest $request)
+    public function associateNewMediaToShop(StoreShopMediaRequest $request)
     {
-        $shop = Shop::find($shopId);
+        $shop = Shop::find($request['shop_id']);
         if (!$shop) {
             return response()->json([
                 'status'  => 'error',
@@ -113,6 +132,7 @@ class ShopMediaMediaController extends Controller
         $images = $request->file('images'); // On attend un tableau d'images
         $mediaItems = [];
 
+        $i=0;
         foreach ($images as $image) {
             // Stockage du fichier image dans le disque "public" dans le dossier "media"
             $path = $image->store('media', 'public');
@@ -128,13 +148,16 @@ class ShopMediaMediaController extends Controller
             // Association du media avec la boutique via la table pivot shop_media
             $shop->media()->attach($media->id);
             $mediaItems[] = $media;
+            /*$mediaItems[$i] = $media;
+            $i++;*/
         }
 
-        return response()->json([
+        return $mediaItems;
+        /*return response()->json([
             'status'  => 'success',
             'message' => 'Médias associés à la boutique avec succès.',
             'data'    => $mediaItems
-        ], 201);
+        ], 201);*/
     }
 
     /**

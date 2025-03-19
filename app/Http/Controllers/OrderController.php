@@ -28,6 +28,12 @@ use App\Services\CartService;
 use App\Http\Controllers\CartController;
 use Ramsey\Uuid\Type\Decimal;
 
+/*
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;*/
+
+
 //revoir les relations ByShop, ByUser, BySupermarket, ByPaymentMethod
 
 class OrderController extends Controller
@@ -38,15 +44,16 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
         if (auth()->user()->role == 'manager') {
             //trouver le supermarché et lister les commandes
             $orders = Order::where('user_id', auth()->user()->id)->get();
+            //$orders = Order::where('user_id', auth()->user()->id)->paginate(10);
         } else {
+            //$orders = Order::paginate(10);
             $orders = Order::all();
         }
 
-        return response()->json($orders);
+        return response()->json($orders, 200);
     }
 
     /**
@@ -64,8 +71,8 @@ class OrderController extends Controller
 
         $order = Order::create($requestValidated);
 
-        //return response()->json(['message' => 'Order placed successfully'], 201);
-        return response()->json(['message' => 'Order placed successfully']);
+        return response()->json(['message' => 'Commande passée avec succès'], 201);
+        //return response()->json(['message' => 'Order placed successfully']);
     }
 
     /**
@@ -104,8 +111,8 @@ class OrderController extends Controller
 
         $order->delete();
 
-        //return response()->json(['message' => 'Order deleted successfully'], 204);
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Commande supprimée avec succès'], 204);
+        //return response()->json(null, 204);
     }
 
     //public function 
@@ -496,6 +503,9 @@ class OrderController extends Controller
             $order->status = $request->status;
             $order->save();
             DB::commit();
+
+            //broadcast(new OrderStatusUpdated($order));
+
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Statut de la commande mis à jour.',
