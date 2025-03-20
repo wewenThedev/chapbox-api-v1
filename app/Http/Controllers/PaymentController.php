@@ -13,7 +13,10 @@ use App\Http\Requests\UpdatePaymentRequest;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
 
+use App\Services\FedapayService;
 
+
+///v1 class
 class PaymentController extends Controller
 {
     protected $fedaPay;
@@ -122,3 +125,54 @@ if ($paymentSuccess) {
 
 
 }
+
+//v2
+/*
+class PaymentController extends Controller
+{
+    protected $fedapayService;
+
+    public function __construct(FedapayService $fedapayService)
+    {
+        $this->fedapayService = $fedapayService;
+    }
+
+    /**
+     * Génère un paiement et retourne l'URL de paiement à l'utilisateur.
+     *
+    public function initiatePayment(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:100',
+            'description' => 'required|string',
+            'customer' => 'required|array',
+            'customer.email' => 'required|email',
+            'customer.firstname' => 'required|string',
+            'customer.lastname' => 'required|string',
+            'customer.phone' => 'required|string'
+        ]);
+
+        $response = $this->fedapayService->createPayment(
+            $request->amount,
+            $request->description,
+            $request->customer
+        );
+
+        return response()->json($response);
+    }
+
+    /**
+     * Vérifie le statut d'un paiement.
+     *
+    public function getPaymentStatus(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|integer'
+        ]);
+
+        $response = $this->fedapayService->checkPaymentStatus($request->transaction_id);
+
+        return response()->json($response);
+    }
+}
+*/

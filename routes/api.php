@@ -237,6 +237,18 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('orders/{id}', [OrderController::class, 'show']);
     });
 });
+
+//to test
+route::post('/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
+route::get('/payment/status', [PaymentController::class, 'getPaymentStatus'])->name('payment.status');
+//-
+
+Route::get('/fedapay/token', [PaymentController::class, 'generatePaymentToken']);
+Route::post('/fedapay/payment', [PaymentController::class, 'processPayment']);
+
+//--
+
+
 //Regénérer le PDF du dictionnaire de données de la BD chapbox
 
 //dashboard Admin
@@ -258,21 +270,6 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 });
 
-
-Route::get('/fedapay/token', [PaymentController::class, 'generatePaymentToken']);
-Route::post('/fedapay/payment', [PaymentController::class, 'processPayment']);
-
-
-
-/*use Barryvdh\DomPDF\Facade as PDF;
-
-public function generateInvoice($orderId)
-{
-    $order = Order::findOrFail($orderId);
-    $pdf = PDF::loadView('invoice', compact('order'));
-    return $pdf->download('invoice.pdf');
-}
-*/
 
 
 ///Routes de dashboard à modifier pour faire correspondre aux controllers des Models

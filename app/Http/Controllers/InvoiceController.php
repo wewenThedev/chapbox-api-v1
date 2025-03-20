@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade as PDF;
 
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
@@ -62,4 +64,11 @@ class InvoiceController extends Controller
         return response()->json(null, 204);
 
     }
+
+    public function generateInvoice($orderId)
+{
+    $order = Order::findOrFail($orderId);
+    $pdf = PDF::loadView('invoice', compact('order'));
+    return $pdf->download('invoice.pdf');
+}
 }

@@ -13,6 +13,16 @@ use function Laravel\Prompts\error;
 
 class ShopProductController extends Controller
 {
+    //générer une liste de produits 100% Béninois via chatgpt
+    //download products images
+    //download shops images
+    //attach images to product
+    //attach images to shop
+    //test FedaPay API
+    //test GoMaps response in this API
+    //penser à générer les routes et fonctions pour les statistiques
+
+    
     /**
      * Display a listing of the resource.
      */
