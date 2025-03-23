@@ -71,7 +71,8 @@ class ShoppingDetails extends Model
     public function getProductsInCart(){
         $shoppingDetailsToIgnore = Order::where('shopping_details_id','in',ShoppingDetails::where('cart_id', $this->cart_id))->get('shopping_details_id');
         dd($shoppingDetailsToIgnore);
-        $instanceToConsider = ShoppingDetails::where('id', 'not in', $shoppingDetailsToIgnore)->get('shop_id', 'product_id.');
+        //vérifier le product.id
+        $instanceToConsider = ShoppingDetails::where('id', 'not in', $shoppingDetailsToIgnore)->get(['shop_id', 'product.id']);
         dd($instanceToConsider);
         $result = ShopProduct::where('product_id', $instanceToConsider->product_id)->where('shop_id', $instanceToConsider->shop_id);
         dd($result);

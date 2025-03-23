@@ -12,6 +12,8 @@ use App\Models\Shop;
 use App\Models\User;
 use App\Models\Cart;
 
+use Illuminate\Support\Facades\DB;
+
 class AdminDashboardController extends Controller
 {
     public function latestOrders(){
@@ -114,7 +116,7 @@ class AdminDashboardController extends Controller
 
     public function cartConversionRate()
     {
-        $conversionRate = (Order::where('checked_out', 1)->count() / \App\Models\Cart::count()) * 100;
+        $conversionRate = (Order::where('checked_out', 1)->count() / Cart::count()) * 100;
         return response()->json(['conversion_rate' => $conversionRate]);
     }
 
@@ -126,7 +128,7 @@ class AdminDashboardController extends Controller
 
     public function ordersByuser()
     {
-        $ordersByuser = \App\Models\user::selectRaw('users.name as user_name')
+        $ordersByuser = User::selectRaw('users.name as user_name')
                                         ->selectRaw('COUNT(orders.id) as order_count')
                                         ->join('orders', 'users.id', '=', 'orders.user_id')
                                         ->groupBy('users.name')
@@ -173,7 +175,8 @@ class AdminDashboardController extends Controller
             $totalSalesByShop = Order::where('manager_id', $managerId)->sum('total_ht');
         } else {
             //$totalSalesByShop = Order::sum('total_ht')->groupBy();
-            $totalSalesByShop = OrderItem::sum('total_ht')->groupBy('shop');
+            //vérifier le groupBy
+            $totalSalesByShop = Order::sum('total_ht')->groupBy('shop');
         }
 
         return response()->json($totalSalesByShop, 201);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+//namespace App\Models;
 
 namespace App\Services;
 
@@ -202,6 +202,7 @@ foreach ($existingDetails as $item) {
         }
         //$shoppingDetail->load(['shop', 'product', 'cart', 'order']);
 //dd($shoppingDetail);
+DB::commit();
         return response()->json([
             'success' => 'Produit ajouté au panier avec succès.',
             'data'    => $shoppingDetail,

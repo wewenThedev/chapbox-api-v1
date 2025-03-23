@@ -22,7 +22,7 @@ class OrderFactory extends Factory
     public function definition()
     {
        return [
-         'user_id'         => $this->faker->optional()->randomElement(\App\Models\User::pluck('id')->toArray()) ?: User::factory(),
+         'user_id'         => $this->faker->optional()->randomElement(User::pluck('id')->toArray()) ?: User::factory(),
          'guest_firstname' => $this->faker->firstName,
          'guest_lastname'  => $this->faker->lastName,
          'guest_phone'     => $this->faker->regexify('(229)(6[25-9]|7[0-9])[0-9]{6}'),

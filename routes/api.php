@@ -170,8 +170,8 @@ Route::delete('shops/{shopId}/products/{productId}', [ShopProductController::cla
 Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
         //Route:resource à changer avec Route:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
-        //Route::resource('supermarkets', SupermarketController::class)->except(['index', 'show']);
-        Route::resource('supermarkets', SupermarketController::class);
+        //('supermarkets', SupermarketController::class)->except(['index', 'show']);
+        Route::apiResource('supermarkets', SupermarketController::class);
     });
     Route::group(['middleware' => 'role:manager'], function() {
         Route::get('supermarkets', [SupermarketController::class, 'index']);
@@ -184,7 +184,7 @@ Route::middleware('auth:sanctum')->group(function() {
 /*Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
         //Route:resource à changer avec Route:apiResource vu que je gère API uniquement. Resource crée les routes create et edit
-        Route::resource('shops', ShopController::class);
+        Route::apiResource('shops', ShopController::class);
     });
     Route::group(['middleware' => 'role:manager'], function() {
         Route::get('shops', [ShopController::class, 'index']);
@@ -198,7 +198,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
 /*Route::middleware('auth:sanctum')->group(function() {
     Route::group(['middleware' => 'role:admin'], function() {
-        Route::resource('products', ProductController::class);
+        Route::apiResource('products', ProductController::class);
     });
     Route::group(['middleware' => 'role:manager'], function() {
         Route::get('products', [ProductController::class, 'index']);

@@ -161,7 +161,7 @@ class ProductController extends Controller
             }
         }
         else {
-            return response()->json(null, 403);
+            return response()->json(['message' => 'Vous n\'etes pas autorisé'], 403);
         }
     }
 

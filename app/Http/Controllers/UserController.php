@@ -128,7 +128,9 @@ class UserController extends Controller
         //dd(User::with(['profile', 'picture', 'notifications', 'orders'])->get());
         $users = User::with(['profile', 'picture', 'notifications', 'orders'])->get();
         //$users = User::all();
-        return response()->json(['users' => $users], 200);
+        $totalUsers = $users->count();
+
+        return response()->json(['users' => $users, 'totalUsers' => $totalUsers], 200);
         
     }
 
@@ -138,6 +140,9 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         //
+
+        //vérifier si le nom d'utilisateur est déjà occupé , le numéro aussi et l'adresse mail pour savoir ce qu'il se passe
+        
         $user = User::create($request->validated());
         return response()->json(['user' => $user], 201);
 
