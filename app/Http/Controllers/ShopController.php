@@ -10,7 +10,8 @@ use App\Http\Requests\StoreShopRequest;
 
 use App\Models\Shop;
 use App\Models\Product;
-use App\Models\Supermarket;
+use App\Models\Address;
+use App\Models\Media;
 use App\Models\ShoppingDetails;
 use App\Models\ShopProduct;
 
@@ -21,15 +22,31 @@ class ShopController extends Controller
         $extension = $this->getFileExtension($shop->image); // Ex : .png, .jpg
         return 'shop_image_' .$shop->getFullName().'_'. $shop->id . '_' . $timestamp . $extension;
     }
+
+    public function shortListShops(){
+        $shops = Shop::with(['shops', 'address', 'logo'])->limit(4)->get();
+    
+        return response()->json(['shops' => $shops], 201);
+    }
+    
+    public function listShops(){
+        $shops = Shop::with(['address', 'products', 'media', 'supermarket'])->paginate(10);
+    
+        return response()->json(['shops' => $shops], 201);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
     
-        $shops = Shop::all();
+        
+        $shops = Shop::with(['address', 'products', 'media', 'supermarket'])->get();
+
+        //$shops = Shop::all();
         //$shops = Shop::paginate(2);
-        //return Shop::paginate(2);
+
         return response()->json($shops, 200);
     }
 
@@ -40,6 +57,8 @@ class ShopController extends Controller
     {
         //
         $shop = Shop::create($request->validated());
+        $shop->load(['address', 'products', 'media', 'supermarket']);
+
         return response()->json($shop, 201);
 
     }
@@ -47,31 +66,59 @@ class ShopController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id /*Shop $shop*/)
+    public function show($id)
     {
-        $shop = Shop::findOrFail($id);
-        return $shop;
+        $shop = Shop::find($id);
+
+        if($shop){
+        $shop->load(['address', 'products', 'media', 'supermarket']);
+
+        return response()->json($shop, 200);
+    }else{
+        return response()->json(['error' => 'Boutique de supermarcché non trouvé'], 404);
+    }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateShopRequest $request, string $id /*Shop $shop*/)
+    public function update(UpdateShopRequest $request, $id)
     {
-        $shop = Shop::findOrFail($id);
-        $shop->update($request->validated());
-        return response()->json($shop);
+        $shop = Shop::find($id);
+        
+        if($shop){
+            if($shop->update($request->validated())){
+        $shop->load(['address', 'products', 'media', 'supermarket']);
 
+
+        return response()->json($shop, 201);
+    }else{
+        return response()->json(['error' => 'Echec de la mise à jour des informations'], 404);
+    }
+//dd($shop);
+}else{
+    return response()->json(['error' => 'Boutique de supermarché non trouvé'], 404);
+}
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id /*Shop $shop*/)
+    public function destroy($id)
     {
-        $shop = Shop::findOrFail($id);
-        $shop->delete();
-        return response()->json(null, 204);
+        $shop = Shop::find($id);
+        $shopToDelete = $shop;
+        if($shop){
+            if($shop->delete()){
 
+        return response()->json(null, 204);
+    }else{
+        return response()->json(['error' => 'Echec de la suppression de la boutique de supermarché'], 404);
     }
+//dd($supermarket);
+}else{
+    return response()->json(['error' => 'outique de Supermarché non trouvé'], 404);
+}
+    }
+    
 }

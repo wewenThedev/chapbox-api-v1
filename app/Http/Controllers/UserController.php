@@ -18,9 +18,109 @@ use App\Models\ShoppingDetails;
 
 class UserController extends Controller
 {
+     public function getUserOrdersHistory($id)
+     {
+         // Assurez-vous que l'utilisateur est authentifié
+         $user = auth()->user();
+         //dd($user);
+         // Récupérer toutes les commandes de l'utilisateur
+         $orders = Order::where('user_id', $id/*$user->id*/)->with('shoppingDetails')->get();
+     
+         if($orders){
+                 return response()->json(
+                     [
+                     'orders' => $orders
+                     ], 200);
+         }else{
+             return response()->json(['error' => 'Aucune commande passée'], 404);
+         }
+     }
+     
+     
+     public function getUserCartProducts($id)
+     {
+         // Assurez-vous que l'utilisateur est authentifié
+         $user = auth()->user();
+     
+     $userCartId = Cart::where('user_id', $id)->pluck('id')[0];
+     //dd($userCart);
+         // Récupérer les détails du panier
+         $cartDetails = ShoppingDetails::where('cart_id', $userCartId/*$user->cart*/)->with(['product', 'shop'])->get();
+     
+         return response()->json(['cartDetails' => $cartDetails], 200);
+     }
+     
+     
+     public function getSavedAddresses()
+     {
+         // Assurez-vous que l'utilisateur est authentifié
+         $user = auth()->user();
+     
+         // Récupérer les adresses sauvegardées de l'utilisateur
+         $addresses = Address::where('user_id', $user->id)->get();
+     
+         return response()->json(['addresses' => $addresses]);
+     }
+     
+     
+     public function updateSavedAddress(string $id, Request $request)
+     {
+         // Valider les données de la requête
+         $request->validate([
+             'name' => 'required|string|max:255',
+             'fullAddress' => 'required|string',
+             'latitude' => 'required|numeric',
+             'longitude' => 'required|numeric',
+         ]);
+     
+         // Trouver l'adresse par ID
+         $address = Address::findOrFail($id);
+         
+         // Mettre à jour les informations de l'adresse
+         $address->update($request->all());
+     
+         return response()->json(['address' => $address]);
+     }
+     
+     
+     public function removeSavedAddress(string $id)
+     {
+         // Trouver l'adresse par ID
+         $address = Address::findOrFail($id);
+         
+         // Supprimer l'adresse
+         $address->delete();
+     
+         return response()->json(['message' => 'Address deleted successfully.']);
+     }
+     
+     
+     public function getProfilePicture()
+     {
+         // Assurez-vous que l'utilisateur est authentifié
+         $user = auth()->user();
+     
+         // Récupérer l'image de profil de l'utilisateur
+         $profilePicture = Media::find($user->picture_id);
+     
+         return response()->json(['profile_picture' => $profilePicture], 200);
+     }
+     
+     public function updateProfilePicture($request){
+     //to write
+     }
+
+     public function getUserTotalOrders($userId){
+
+        $totalOrdersForUser = Order::where('user_id', $userId)->count();
+        
+        return response()->json(['totalOrdersForUser' => $totalOrdersForUser], 200);
+    }
+     
     /**
      * Display a listing of the resource.
      */
+
     public function index(?Request $request)
     {
         $query = User::query();
@@ -87,7 +187,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
-        $user = User::with(['profile', 'picture'])->findOrFail($id);
+        $user = User::with(['profile', 'picture'])->find($id);
         //dd($user);
         if($user){
             if($user->delete()){
@@ -104,97 +204,6 @@ class UserController extends Controller
         }
     }
 
-    public function getUserOrdersHistory($id)
-{
-    // Assurez-vous que l'utilisateur est authentifié
-    $user = auth()->user();
-    //dd($user);
-    // Récupérer toutes les commandes de l'utilisateur
-    $orders = Order::where('user_id', $id/*$user->id*/)->with('shoppingDetails')->get();
-
-    if($orders){
-            return response()->json(
-                [
-                'orders' => $orders
-                ], 200);
-    }else{
-        return response()->json(['error' => 'Aucune commande passée'], 404);
-    }
-}
-
-
-public function getUserCartProducts($id)
-{
-    // Assurez-vous que l'utilisateur est authentifié
-    $user = auth()->user();
-
-$userCartId = Cart::where('user_id', $id)->pluck('id')[0];
-//dd($userCart);
-    // Récupérer les détails du panier
-    $cartDetails = ShoppingDetails::where('cart_id', $userCartId/*$user->cart*/)->with(['product', 'shop'])->get();
-
-    return response()->json(['cartDetails' => $cartDetails], 200);
-}
-
-
-public function getSavedAddresses()
-{
-    // Assurez-vous que l'utilisateur est authentifié
-    $user = auth()->user();
-
-    // Récupérer les adresses sauvegardées de l'utilisateur
-    $addresses = Address::where('user_id', $user->id)->get();
-
-    return response()->json(['addresses' => $addresses]);
-}
-
-
-public function updateSavedAddress(string $id, Request $request)
-{
-    // Valider les données de la requête
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'fullAddress' => 'required|string',
-        'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
-    ]);
-
-    // Trouver l'adresse par ID
-    $address = Address::findOrFail($id);
-    
-    // Mettre à jour les informations de l'adresse
-    $address->update($request->all());
-
-    return response()->json(['address' => $address]);
-}
-
-
-public function removeSavedAddress(string $id)
-{
-    // Trouver l'adresse par ID
-    $address = Address::findOrFail($id);
-    
-    // Supprimer l'adresse
-    $address->delete();
-
-    return response()->json(['message' => 'Address deleted successfully.']);
-}
-
-
-public function getProfilePicture()
-{
-    // Assurez-vous que l'utilisateur est authentifié
-    $user = auth()->user();
-
-    // Récupérer l'image de profil de l'utilisateur
-    $profilePicture = Media::find($user->picture_id);
-
-    return response()->json(['profile_picture' => $profilePicture], 200);
-}
-
-public function updateProfilePicture($request){
-//to write
-}
 
 
 }

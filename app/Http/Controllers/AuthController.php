@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\LoginAdminOrManagerRequest;
 use Illuminate\Http\Request;
 
 use App\Models\User;
@@ -33,6 +34,7 @@ class AuthController extends Controller
         } else {
             $newCart = Cart::create([
                 'user_id' => $user->id,
+                //'device_id' => $request->device_id, envisager mettre une valeure par défaut pour le device Id en attendant
                 'device_id' => $request->device_id,
             ]);
             //dd($newCart);
@@ -89,67 +91,105 @@ class AuthController extends Controller
             'password' => 'required|string|min:8'
         ]);
         //dd($requestValidated);
-        if ($requestValidated) {
-            $user = User::where('profile_id', 3)
-                ->where(function ($query) use ($request) {
-                    $query->where('email', $request->email_or_phone)
-                        ->orWhere('phone', $request->email_or_phone);
-                })->first();
+        try {
+            if ($requestValidated) {
+                $user = User::where('profile_id', 3)
+                    ->where(function ($query) use ($request) {
+                        $query->where('email', $request->email_or_phone)
+                            ->orWhere('phone', $request->email_or_phone);
+                    })->first();
+                if ($user) {
+                    if (!$user && !Hash::check($requestValidated['password'], $user->password)) {
 
-                if ( !$user && ! Hash::check($requestValidated['password'], $user->password)) {
-            
-                    return response()->json([
-                        'email' => ['The provided credentials are incorrect.'],
-                        //'error' => 'The provided credentials are incorrect.',
-                ]);
+                        return response()->json([
+                            'email' => ['The provided credentials are incorrect.'],
+                            //'error' => 'The provided credentials are incorrect.',
+                        ]);
 
-            /*if (!$user || ! Hash::check($requestValidated['password'], $user->password)) {
-                throw ValidationException::withMessages([
-                    'email' => ['The provided credentials are incorrect.'],
-                ]);*/
+                        /*if (!$user || ! Hash::check($requestValidated['password'], $user->password)) {
+                            throw ValidationException::withMessages([
+                                'email' => ['The provided credentials are incorrect.'],
+                            ]);*/
+                    }
+                    $token = $user->createToken('api_token')->plainTextToken;
+
+                    //dd($user->id);
+
+                    return response()->json(['token' => $token, 'user' => $user]);
+                }
+            } else {
+                return response()->json(['error' => 'Informations de connexion invalides', 'request' => $requestValidated], 406);
+
             }
-            $token = $user->createToken('api_token')->plainTextToken;
 
-            //dd($user->id);
-
-            return response()->json(['token' => $token, 'user' => $user]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
-    public function loginAdminOrManager(Request $request)
+    public function loginAdminOrManager(/*Request*/ LoginAdminOrManagerRequest $request)
     {
+        /*
+             "token": "12|O7UQgFMHbjPWXJ9ZcLMqFGcbPg1cLMfKo6Lionr7ce154125",
+    "user": {
+        "id": 9,
+        "firstname": "Jean",
+        "lastname": "DOSSA",
+        "username": "jdoss4",
+        "phone": "68741263",
+        "email": "jdossms@test.com",
+         */
+        $requestValidated = $request;
+        //dd($requestValidated);
         //balise html especially img as pwd connect successfully -- to correct
-        $requestValidated = $request->validate([
+        /*$requestValidated = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-        ]);
-        //dd($requestValidated);
-        if ($requestValidated) {
-            // Chercher par username et profil admin ou manager
-            $user = User::where('username', $requestValidated['username'])
-                ->whereIn('profile_id', [1, 2]) // Admin = 1, Manager = 2
-                ->first();
+        ]);*/
+        try {
+            // Code susceptible de générer une erreur
+
+            if ($requestValidated) {
+                // Chercher par username et profil admin ou manager
+                $user = User::with(['picture', 'cart', 'orders'])->where('username', $requestValidated['username'])
+                    ->whereIn('profile_id', [1, 2]) // Admin = 1, Manager = 2
+                    ->first();
 
                 //dd(!$user);
-
-            if ( !$user && ! Hash::check($requestValidated['password'], $user->password)) {
-            
-                return response()->json([
-                    'error' => 'The provided credentials are incorrect.',
-            ]);
-                }
-            /*if (! $user && ! Hash::check($requestValidated['password'], $user->password)) {
-                throw ValidationException::withMessages([
-                'username' => ['The provided credentials are incorrect.'],
-            ]);*/
-            else{
-                $token = $user->createToken('api_token')->plainTextToken;
                 //dd($user);
-                return response()->json(['token' => $token, 'user' => $user]);
-            }  
-        }else{
-            return response()->json($request, 406)->with(['error' => 'Information de connexion invalides']);
-            
+                //cas où identifiant client saisis
+                if ($user) {
+                    if (!$user && !Hash::check($requestValidated['password'], $user->password)) {
+
+                        return response()->json([
+                            'error' => 'Les identifiants saisis sont incorrects. Vous n\'etes pas autorisés',
+                            'username' => 'The provided credentials are incorrect.',
+                        ]);
+                    }
+                    /*if (! $user && ! Hash::check($requestValidated['password'], $user->password)) {
+                        throw ValidationException::withMessages([
+                        'username' => ['The provided credentials are incorrect.'],
+                    ]);*/ else {
+                        $token = $user->createToken('api_token')->plainTextToken;
+                        //dd($user);
+                        return response()->json(['token' => $token, 'user' => $user, 'success' => 'Connexion réussie']);
+                    }
+
+                } else {
+                    return response()->json(['error' => 'Informations de connexion invalides', 'request' => $requestValidated], 406);
+
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -173,15 +213,15 @@ class AuthController extends Controller
 
 
 
-        /*$requestValidated = $request->validate([
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required_without:phone|string|email|max:255|unique:users',
-            'phone' => 'required_without:email|string|max:15|unique:users',
-            //'password' => 'required|string|min:8|confirmed',
-            'password' => 'required|string|min:8',
-        ]);*/
+/*$requestValidated = $request->validate([
+    'firstname' => 'required|string|max:255',
+    'lastname' => 'required|string|max:255',
+    'username' => 'required|string|max:255|unique:users',
+    'email' => 'required_without:phone|string|email|max:255|unique:users',
+    'phone' => 'required_without:email|string|max:15|unique:users',
+    //'password' => 'required|string|min:8|confirmed',
+    'password' => 'required|string|min:8',
+]);*/
 
-        //dd($requestValidated);
-        //dd($request);
+//dd($requestValidated);
+//dd($request);

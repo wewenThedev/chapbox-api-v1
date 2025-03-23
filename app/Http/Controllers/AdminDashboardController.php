@@ -14,11 +14,17 @@ use App\Models\Cart;
 
 class AdminDashboardController extends Controller
 {
+    public function latestOrders(){
+        $latestOrders = Order::with(['user', 'brand', 'comments'])
+            ->latest()
+            ->paginate(10);
+    }
 
     /*
     public function getStats()
 {
     $totalSales = Order::sum('total');  // Ventes totales
+
     $totalOrders = Order::count();      // Nombre total de commandes
     $bestSellingProducts = Product::with('orders')
                             ->select('name', DB::raw('COUNT(orders.product_id) as total_sold'))
@@ -130,45 +136,96 @@ class AdminDashboardController extends Controller
     }
 
 
-//--
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function getTotalOrders()
     {
-        //
+        $totalOrders = Order::count();
+        return response()->json($totalOrders, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function getTotalHtSales()
     {
-        //
+        $totalSales = Order::sum('total_ht');  // Ventes totales
+        return response()->json($totalSales, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function getTotalTtcSales()
     {
-        //
+        $totalSales = Order::sum('total_ttc');  // Ventes totales
+        return response()->json($totalSales, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function getBestSellingProducts()
     {
-        //
+        $bestSellingProducts = Product::with('orders')
+            ->select('name', DB::raw('COUNT(orders.product_id) as total_sold'))
+            ->groupBy('name')
+            ->orderBy('total_sold', 'desc')
+            ->take(5)
+            ->get();  // Top 5 des produits les plus vendus
+
+        return response()->json($bestSellingProducts, 201);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function getTotalHtSalesByShop(string $shopId)
     {
-        //
+        if (auth()->check() && auth()->user()->profile === 2) {
+            $managerId = auth()->id();
+            $totalSalesByShop = Order::where('manager_id', $managerId)->sum('total_ht');
+        } else {
+            //$totalSalesByShop = Order::sum('total_ht')->groupBy();
+            $totalSalesByShop = OrderItem::sum('total_ht')->groupBy('shop');
+        }
+
+        return response()->json($totalSalesByShop, 201);
     }
+    public function getTotalTtcSalesByShop(string $shopId)
+    {
+        $managerId = auth()->id();
+        $totalSalesByShop = Order::where('manager_id', $managerId)->sum('total_ttc');
+        return response()->json($totalSalesByShop, 201);
+    }
+
+    public function getTotalOrdersByShop()
+    {
+        $managerId = auth()->id();
+        //if auth()->user()->profile_id == 1 -- do{}
+        $totalOrdersByShop = Order::where('manager_id', $managerId)->count();
+        return response()->json($totalOrdersByShop, 201);
+    }
+
+    public function getBestSellingProductsByShop()
+    {
+        $managerId = auth()->id();
+        $shopId = Shop::where('manager_id', $managerId)->get('id');
+
+        $bestSellingProductsByShop = Product::where('shop_id', $shopId)
+            ->with(['shops', 'orders'])
+            ->select('name', DB::raw('COUNT(orders.product_id) as total_sold'))
+            ->groupBy('name')
+            ->orderBy('total_sold', 'desc')
+            ->take(5)
+            ->get();  // Top 5 des produits les plus vendus
+
+        return response()->json($bestSellingProductsByShop, 201);
+    }
+
+    public function getGlobalKpi()
+    {
+
+        $totalVisitors = Cart::count();  // Nombre total de visiteurs
+        $totalOrders = Order::count();      // Nombre total de commandes
+        $conversionRate = $totalOrders / $totalVisitors * 100;  // Taux de conversion
+
+        $averageOrderValue = Order::avg('total');  // Valeur moyenne des commandes
+        $averageProcessingTime = Order::where('status', 'completed')
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_time')
+            ->first()->avg_time;  // Temps moyen de traitement d’une commande
+
+        return response()->json([
+            'conversion_rate' => $conversionRate,
+            'average_order_value' => $averageOrderValue,
+            'average_processing_time' => $averageProcessingTime
+        ], 201);
+    }
+
 }

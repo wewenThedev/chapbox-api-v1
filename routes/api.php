@@ -52,6 +52,9 @@ use Illuminate\Routing\Route as RoutingRoute;
 });*/
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 
+Route::get('/test-invoice', function () {
+    return view('invoices.test_pdf');
+});
 
 //Routes pour l'authentification
 //Route::post('/register', [AuthController::class, 'register']);
@@ -66,10 +69,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 // Routes pour les utilisateurs
 Route::apiResource('users', UserController::class);
-//Route::resource('users', UserController::class);
 
-Route::get('users/{id}/my-cart', [UserController::class, 'getUserCartProducts']);
-Route::get('users/{id}/orders-history', [UserController::class, 'getUserOrdersHistory']);
+
+//{userId}
+Route::get('users/{id}/my-cart', [UserController::class, 'getUserCartProducts'])->name('user-cart-content');
+Route::get('users/{id}/orders-history', [UserController::class, 'getUserOrdersHistory'])->name('user-orders');
 
 
 // Routes pour les commandes
@@ -92,11 +96,9 @@ Route::get('addresses/places-details', [AddressController::class, 'placesDetails
 
 // Routes pour les marques
 Route::apiResource('brands', BrandController::class);
-//Route::resource('brands', BrandController::class);
 
 // Routes pour les médias
 Route::apiResource('media', MediaController::class);
-//Route::resource('media', MediaController::class);
 
 //-
 Route::get('media/create/addImages', function(){
@@ -108,23 +110,18 @@ Route::post('media/store',  [PaymentMethodController::class, 'store']);
 
 // Routes pour les notifications
 Route::apiResource('notifications', NotificationController::class);
-//Route::resource('notifications', NotificationController::class);
 
 // Routes pour les avis
 Route::apiResource('feedbacks', FeedbackController::class);
-//Route::resource('feedbacks', FeedbackController::class);
 
 // Routes pour les paiements
 Route::apiResource('payments', PaymentController::class);
-//Route::resource('payments', PaymentController::class);
 
 // Routes pour les paiements
 Route::apiResource('payment-methods', PaymentMethodController::class);
-//Route::resource('payments', PaymentController::class);
 
 // Routes pour les cartes
 Route::apiResource('carts', CartController::class);
-//Route::resource('carts', CartController::class);
 
 Route::post('carts/{cartId}/update-product-in-cart', [CartController::class, 'updateProductInCart']);
 Route::get('carts/{cartId}/total-cost', [CartController::class, 'getCartTotal']);
@@ -137,11 +134,9 @@ Route::get('/cart', [CartController::class, 'viewCart']);
 
 // Routes pour les détails de shopping
 Route::apiResource('shopping-details', ShoppingDetailsController::class);
-//Route::resource('shopping-details', ShoppingDetailsController::class);
-//Route::get('', []);
 
 // Routes pour les promotions
-Route::resource('promos', PromoController::class);
+Route::apiResource('promos', PromoController::class);
 
 ///routes resource
 
@@ -153,12 +148,9 @@ Route::apiResource('categories', CategoryController::class);
 
 // Routes pour les produits
 Route::apiResource('products', ProductController::class);
-//Route::resource('products', ProductController::class);
 
 // Routes pour les supermarchés
-//temporaire
 Route::apiResource('supermarkets', SupermarketController::class);
-//Route::resource('supermarkets', SupermarketController::class);
 
 // Routes pour les shops - boutiques
 Route::apiResource('shops', ShopController::class);
@@ -238,6 +230,9 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 });
 
+Route::get('orders', [OrderController::class, 'index']);
+//ajouter getOrderHistory ...
+
 //to test
 route::post('/payment/initiate', [PaymentController::class, 'initiatePayment'])->name('payment.initiate');
 route::get('/payment/status', [PaymentController::class, 'getPaymentStatus'])->name('payment.status');
@@ -273,17 +268,17 @@ Route::middleware('auth:sanctum')->group(function() {
 
 
 ///Routes de dashboard à modifier pour faire correspondre aux controllers des Models
-/*
-Route::get('/dashboard/total-sales', [DashboardController::class, 'totalSales']);
-Route::get('/dashboard/sales-by-day', [DashboardController::class, 'salesByDay']);
-Route::get('/dashboard/sales-by-product', [DashboardController::class, 'salesByProduct']);
-Route::get('/dashboard/sales-by-shop', [DashboardController::class, 'salesByShop']);
-Route::get('/dashboard/anonymous-users', [DashboardController::class, 'anonymousUsers']);
-Route::get('/dashboard/authenticated-users', [DashboardController::class, 'authenticatedUsers']);
-Route::get('/dashboard/active-sessions', [DashboardController::class, 'activeSessions']);
-Route::get('/dashboard/most-viewed-products', [DashboardController::class, 'mostViewedProducts']);
-Route::get('/dashboard/cart-conversion-rate', [DashboardController::class, 'cartConversionRate']);
-Route::get('/dashboard/total-orders', [DashboardController::class, 'totalOrders']);
-Route::get('/dashboard/orders-by-user', [DashboardController::class, 'ordersByUser']);
-*/
+
+Route::get('/dashboard/total-sales', [AdminDashboardController::class, 'totalSales']);
+//Route::get('/dashboard/sales-by-day', [AdminDashboardController::class, 'salesByDay']);
+Route::get('/dashboard/sales-by-product', [AdminDashboardController::class, 'salesByProduct']);
+Route::get('/dashboard/sales-by-shop', [AdminDashboardController::class, 'salesByShop']);
+Route::get('/dashboard/anonymous-users', [AdminDashboardController::class, 'anonymousUsers']);
+Route::get('/dashboard/authenticated-users', [AdminDashboardController::class, 'authenticatedUsers']);
+//Route::get('/dashboard/active-sessions', [AdminDashboardController::class, 'activeSessions']);
+Route::get('/dashboard/most-viewed-products', [AdminDashboardController::class, 'mostViewedProducts']);
+Route::get('/dashboard/cart-conversion-rate', [AdminDashboardController::class, 'cartConversionRate']);
+Route::get('/dashboard/total-orders', [AdminDashboardController::class, 'totalOrders']);
+Route::get('/dashboard/orders-by-user', [AdminDashboardController::class, 'ordersByUser']);
+
 

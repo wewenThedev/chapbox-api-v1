@@ -30,6 +30,8 @@ class ShoppingDetails extends Model
         'cost'
     ];
 
+    protected $table = 'shopping_details';
+
     public function shop()
     {
         return $this->belongsTo(Shop::class);

@@ -31,6 +31,16 @@ class User extends Authenticatable
         return $this->belongsTo(Cart::class, 'user_id');
     }
 
+    public function shop()
+    {
+        return $this->belongsTo(Shop::class, 'shop_manager_id');
+    }
+
+    public function supermarket()
+    {
+        return $this->belongsTo(Supermarket::class, 'market_manager_id');
+    }
+
     public function notifications()
     {
         return $this->belongsToMany(Notification::class, 'user_notifications')->withPivot('sent_at');

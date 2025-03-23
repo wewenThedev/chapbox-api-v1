@@ -30,10 +30,11 @@ class Cart extends Model
     }
 
     public function products(){
-        return $this->hasManyThrough(Product::class, ShoppingDetails::class, 'shopping_details_id', 'product_id');
-        //return $this->hasMany(Product::class);
-
+        return $this->hasManyThrough(Product::class, ShoppingDetails::class, 'product_id', 'id');
     }
+    /*public function shops(){
+        return $this->hasManyThrough(Shop::class, ShoppingDetails::class, 'shop_id', 'id');
+    }*/
 
     /*
     public function products(){

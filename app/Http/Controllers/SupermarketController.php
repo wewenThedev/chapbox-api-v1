@@ -30,6 +30,18 @@ class SupermarketController extends Controller
         return 'supermarket_logo_' . $supermarket->id . '_' . $timestamp . $extension;
     }
 
+public function shortListSupermarketsRegistered(){
+    $supermarkets = Supermarket::with(['shops', 'address', 'logo'])->limit(4)->get();
+
+    return response()->json(['supermarkets' => $supermarkets], 201);
+}
+
+public function listSupermarketsRegistered(){
+    $supermarkets = Supermarket::with(['shops', 'address', 'logo'])->paginate(10);
+
+    return response()->json(['supermarkets' => $supermarkets], 201);
+}
+
     /**
      * Display a listing of the resource.
      */
@@ -58,7 +70,7 @@ class SupermarketController extends Controller
         }else{
             //return response()->json('please go and connect yourself');
             //$supermarkets = Supermarket::paginate(3);
-            $supermarkets = Supermarket::all();
+            $supermarkets = Supermarket::with(['shops', 'address', 'logo'])->get();
         }
         
         //return response()->SupermarketResource($supermarkets);
@@ -79,8 +91,14 @@ class SupermarketController extends Controller
      */
     public function show(string $id)
     {
-        $supermarket = Supermarket::findOrFail($id);
+        $supermarket = Supermarket::find($id);
+
+        if($supermarket){
+        $supermarket->load(['shops', 'address', 'logo']);
         return response()->json($supermarket, 201);
+    }else{
+        return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+    }
     }
 
     /**
@@ -88,10 +106,21 @@ class SupermarketController extends Controller
      */
     public function update(UpdateSupermarketRequest $request, $id)
     {
-        $supermarket = Supermarket::findOrFail($id);
-        $supermarket->update($request->validated());
+        $supermarket = Supermarket::find($id);
+
+        if($supermarket){
+            if($supermarket->update($request->validated())){
+
+        $supermarket->load(['shops', 'address', 'logo']);
 
         return response()->json(['message' => 'Supermarket updated successfully'], 201);
+    }else{
+        return response()->json(['error' => 'Echec de la mise à jour des informations'], 404);
+    }
+//dd($user);
+}else{
+    return response()->json(['error' => 'Supermarché non trouvé'], 404);
+}
     }
 
     /**
@@ -99,9 +128,19 @@ class SupermarketController extends Controller
      */
     public function destroy($id)
     {
-        $supermarket = Supermarket::findOrFail($id);
-        $supermarket->delete();
+        
+        $supermarket = Supermarket::find($id);
+        $supermarketToDelete = $supermarket;
+        if($supermarket){
+            if($supermarket->delete()){
 
-        return response()->json(['message' => 'Supermarket deleted successfully']);
+        return response()->json(['message' => 'Supermarché '.$supermarketToDelete->name.' supprimé avec succès']);
+    }else{
+        return response()->json(['error' => 'Echec de la suppression du supermarché'], 404);
+    }
+//dd($supermarket);
+}else{
+    return response()->json(['error' => 'Supermarché non trouvé'], 404);
+}
     }
 }

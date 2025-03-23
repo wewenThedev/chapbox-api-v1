@@ -39,18 +39,45 @@ use Illuminate\Queue\SerializesModels;*/
 class OrderController extends Controller
 {
 
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        if (auth()->user()->role == 'manager') {
-            //trouver le supermarché et lister les commandes
-            $orders = Order::where('user_id', auth()->user()->id)->get();
-            //$orders = Order::where('user_id', auth()->user()->id)->paginate(10);
-        } else {
-            //$orders = Order::paginate(10);
-            $orders = Order::all();
+        //if(AuthController::check()){
+        if(auth()->user()){
+            if (auth()->user()->role == 'manager') {
+
+
+        //$productAdded = ShopProduct::select('price')->where('product_id', $this->product_id)->where('shop_id', $this->shop_id)->first();
+
+                $shopInManagement = auth()->user()->shop->id;
+                $managerId = auth()->user()->id;
+
+                //trouver le supermarché et lister les commandes
+                //ShoppingDetails::where('order_id', '!==', null)->where;
+                //$orders = Order::where('user_id', auth()->user()->id)->paginate(10);
+    
+                $orders = Order::whereHas('shoppingDetails.shop', function($query) use ($managerId) {
+                    $query->where('shop_manager_id', $managerId);
+                })
+                ->with(['shoppingDetails' => function($query) use ($managerId) {
+                    $query->whereHas('shop', function($q) use ($managerId) {
+                        $q->where('shop_manager_id', $managerId);
+                    });
+                }])
+                ->get
+                ();
+
+            }elseif(auth()->user()->role == 'customer'){
+                return to_route('user-orders');
+            }
+        }else{
+            $orders = Order::paginate(10);
+            //$orders = Order::all();
+            
+            //$orders = Order::limit(5)->get();
         }
 
         return response()->json($orders, 200);
@@ -115,109 +142,7 @@ class OrderController extends Controller
         //return response()->json(null, 204);
     }
 
-    //public function 
-
-
-
-    //admin functions
-
-    public function getTotalOrders()
-    {
-        $totalOrders = Order::count();
-        return response()->json($totalOrders, 201);
-    }
-
-    public function getTotalHtSales()
-    {
-        $totalSales = Order::sum('total_ht');  // Ventes totales
-        return response()->json($totalSales, 201);
-    }
-
-    public function getTotalTtcSales()
-    {
-        $totalSales = Order::sum('total_ttc');  // Ventes totales
-        return response()->json($totalSales, 201);
-    }
-
-    public function getBestSellingProducts()
-    {
-        $bestSellingProducts = Product::with('orders')
-            ->select('name', DB::raw('COUNT(orders.product_id) as total_sold'))
-            ->groupBy('name')
-            ->orderBy('total_sold', 'desc')
-            ->take(5)
-            ->get();  // Top 5 des produits les plus vendus
-
-        return response()->json($bestSellingProducts, 201);
-    }
-
-    public function getTotalHtSalesByShop(string $shopId)
-    {
-        if (auth()->check() && auth()->user()->profile === 2) {
-            $managerId = auth()->id();
-            $totalSalesByShop = Order::where('manager_id', $managerId)->sum('total_ht');
-        } else {
-            //$totalSalesByShop = Order::sum('total_ht')->groupBy();
-            $totalSalesByShop = OrderItem::sum('total_ht')->groupBy('shop');
-        }
-
-        return response()->json($totalSalesByShop, 201);
-    }
-    public function getTotalTtcSalesByShop(string $shopId)
-    {
-        $managerId = auth()->id();
-        $totalSalesByShop = Order::where('manager_id', $managerId)->sum('total_ttc');
-        return response()->json($totalSalesByShop, 201);
-    }
-
-    public function getTotalOrdersByShop()
-    {
-        $managerId = auth()->id();
-        //if auth()->user()->profile_id == 1 -- do{}
-        $totalOrdersByShop = Order::where('manager_id', $managerId)->count();
-        return response()->json($totalOrdersByShop, 201);
-    }
-
-    public function getBestSellingProductsByShop()
-    {
-        $managerId = auth()->id();
-        $shopId = Shop::where('manager_id', $managerId)->get('id');
-
-        $bestSellingProductsByShop = Product::where('shop_id', $shopId)
-            ->with(['shops', 'orders'])
-            ->select('name', DB::raw('COUNT(orders.product_id) as total_sold'))
-            ->groupBy('name')
-            ->orderBy('total_sold', 'desc')
-            ->take(5)
-            ->get();  // Top 5 des produits les plus vendus
-
-        return response()->json($bestSellingProductsByShop, 201);
-    }
-
-    public function getGlobalKpi()
-    {
-
-        $totalVisitors = Cart::count();  // Nombre total de visiteurs
-        $totalOrders = Order::count();      // Nombre total de commandes
-        $conversionRate = $totalOrders / $totalVisitors * 100;  // Taux de conversion
-
-        $averageOrderValue = Order::avg('total');  // Valeur moyenne des commandes
-        $averageProcessingTime = Order::where('status', 'completed')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_time')
-            ->first()->avg_time;  // Temps moyen de traitement d’une commande
-
-        return response()->json([
-            'conversion_rate' => $conversionRate,
-            'average_order_value' => $averageOrderValue,
-            'average_processing_time' => $averageProcessingTime
-        ], 201);
-    }
-
-    /*To DO After
-    public function getKpiByShop(){
-
-    }*/
-
+    
     /**
      * Valide le panier et crée une commande.
      *
@@ -364,6 +289,8 @@ class OrderController extends Controller
                 $shoppingItem->order_id = $order->id;
                 $shoppingItem->save();
             }
+
+            $order->load(['shoppingDetails', 'payments', 'user']);
 
             // Une fois l'ordre créé, le panier demeure intact tant que l'utilisateur ne paye pas la commande 
             //ou ne supprime pas lui-meme les articles du panier

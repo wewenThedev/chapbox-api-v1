@@ -16,7 +16,8 @@ class CategoryController extends Controller
      */
     public function index(?Request $request)
     {
-        $categories = Category::all();
+        //$categories = Category::all();
+        $categories = Category::with(['products'])->get();
         //$categories = Category::paginate(5);
         //return Category::all();
         //return response()->json($categories, 200);
@@ -51,17 +52,18 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $category->update($request->validated());
         return response()->json($category, 200);
-
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id /*Category $category*/)
+    public function destroy($id)
     {
         $category = Category::findOrFail($id);
+        $categoryTodelete = $category;
         $category->delete();
-        return response()->json(null, 204);
+        return response()->json(['success' => 'La catégorie de produit '.$categoryTodelete->name.' a été supprimée avec succès'], 204);
+        //return response()->json(null, 204);
 
     }
 

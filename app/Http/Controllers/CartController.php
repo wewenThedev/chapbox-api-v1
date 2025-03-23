@@ -65,7 +65,17 @@ class CartController extends Controller
     public function index()
     {
         //$carts = Cart::paginate(2);
-        $carts = Cart::all();
+       /* $cartest = Cart::find(29);
+$cartest->delete(); // SoftDelete (met à jour deleted_at)*/
+    /*$cart= Cart::create([
+        'user_id' => 26,
+        'device_id' => 'GOOGLE PIXEL 44'
+    ]);
+        dd($cart);*/
+        //$carts = Cart::all();
+        $carts = Cart::with(['user', 'shoppingDetails', 'products'])->get();
+
+        
         return response()->json($carts, 200);
         //return response()->json(ShoppingDetails::onlyTrashed()->where('order_id','!=',null)->get(), 200);
     }
@@ -121,6 +131,7 @@ class CartController extends Controller
     {
         $cart = Cart::find($id);
         if($cart){
+            $cart->load(['user', 'shoppingDetails', 'products']);
             return response()->json([
                 'cart' => $cart,
                 'status' => 200
@@ -138,6 +149,8 @@ class CartController extends Controller
         $cart = Cart::find($id);
         if ($cart) {
             if ($cart->update($request->validated())) {
+            $cart->load(['user', 'shoppingDetails', 'products']);
+
                 return response()->json(
                     [
                         'success' => 'Panier mis à jour avec succès',

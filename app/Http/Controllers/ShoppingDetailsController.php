@@ -27,9 +27,18 @@ class ShoppingDetailsController extends Controller
      */
     public function index()
     {
-        //
-        //return ShoppingDetails::all();
-        return ShoppingDetails::paginate(5);
+
+        //$shoppingDetails = ShoppingDetails::withTrashed()->get();
+
+        $shoppingDetails = ShoppingDetails::all();
+
+        dd($shoppingDetails->count());
+
+        // $shoppingDetails = ShoppingDetails::paginate(5);
+    
+        // $shoppingDetails = ShoppingDetails::all();
+        return response()->json($shoppingDetails, 200);
+
     }
 
     /**
@@ -46,16 +55,18 @@ class ShoppingDetailsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $shoppingDetails = ShoppingDetails::findOrFail($id);
-        return $shoppingDetails;
+        
+        return response()->json($shoppingDetails, 200);
+        
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateShoppingDetailsRequest $request, string $id)
+    public function update(UpdateShoppingDetailsRequest $request, $id)
     {
         $shoppingDetails = ShoppingDetails::findOrFail($id);
         $shoppingDetails->update($request->validated());
@@ -66,7 +77,7 @@ class ShoppingDetailsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $shoppingDetails = ShoppingDetails::findOrFail($id);
         $shoppingDetails->delete();

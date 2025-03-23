@@ -86,11 +86,14 @@ class CartService
     public function addToCart($request)
     {
         //Identifier l'utilisateur
+        /*dd($request->user_id);
         $user = User::with('cart')->where('id', $request->user_id)->first();
-        //dd($user);
+        */
 
         // Trouver le panier pour l'utilisateur
-        $cart = $this->getUserCart($request->device_id, $request->user_id);
+        //$cart = $this->getUserCart($request->device_id, $request->user_id);
+
+        $cart = Cart::find($request->cart_id);
 
         //dd($cart);
         if (!$cart) {
@@ -100,7 +103,10 @@ class CartService
                 'device_id' => $request->device_id ?? null,
             ]);
         }
+
 //dd($cart);
+$user = User::with('cart')->where('id', $cart->user_id)->first();
+//dd($user);
         DB::beginTransaction();
 
         try{
@@ -190,6 +196,12 @@ foreach ($existingDetails as $item) {
             'added_at'   => now(),
         ]);
 
+        $shoppingDetail = $shoppingDetail->fresh();
+        if ($shoppingDetail->exists) {
+            $shoppingDetail->load(['shop', 'product', 'cart', 'order']);
+        }
+        //$shoppingDetail->load(['shop', 'product', 'cart', 'order']);
+//dd($shoppingDetail);
         return response()->json([
             'success' => 'Produit ajouté au panier avec succès.',
             'data'    => $shoppingDetail,
@@ -255,6 +267,8 @@ foreach ($existingDetails as $item) {
         $shoppingDetail->cost = $shoppingDetail->calculateCost();
         $shoppingDetail->save();
         //dd($shoppingDetail->save());
+
+        $shoppingDetail->load(['shop','product', 'cart', 'order']);
 
         // Calcul du coût total du panier
         $shoppingDetails = ShoppingDetails::where('cart_id', $cart->id)->get();
@@ -330,6 +344,9 @@ foreach ($existingDetails as $item) {
             $shoppingDetail->save();
             $message = 'Quantité diminuée avec succès.';
         }
+
+        $shoppingDetail->load(['shop','product', 'cart', 'order']);
+
 
         // Calcul du coût total du panier après mise à jour
         $shoppingDetails = ShoppingDetails::where('cart_id', $cart->id)->get();

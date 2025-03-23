@@ -22,10 +22,13 @@ class LoginAdminOrManagerRequest extends FormRequest
      */
     public function rules(): array
     {
+        //dd($_REQUEST);
         return [
             //
-            'username' => 'required|string|unique:users|min:4|max:255',
-            'password' => 'required|string|min:8'
+            //'username' => 'required|string|unique:users|min:4|max:255',
+            'username' => 'required|string|min:4|max:255',
+            'password' => 'required|string|min:4'
+            //'password' => 'required|string|min:8'
         ];
     }
 }
