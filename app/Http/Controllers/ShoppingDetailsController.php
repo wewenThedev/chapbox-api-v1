@@ -57,7 +57,8 @@ class ShoppingDetailsController extends Controller
      */
     public function show($id)
     {
-        $shoppingDetails = ShoppingDetails::findOrFail($id);
+        //$shoppingDetails = ShoppingDetails::findOrFail($id);
+        $shoppingDetails = ShoppingDetails::with(['cart', 'product', 'shop', 'order'])->findOrFail($id);
         
         return response()->json($shoppingDetails, 200);
         

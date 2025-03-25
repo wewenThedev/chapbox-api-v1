@@ -78,7 +78,7 @@ Route::get('users/{id}/orders-history', [UserController::class, 'getUserOrdersHi
 
 // Routes pour les commandes
 Route::apiResource('orders', OrderController::class);
-Route::post('orders/new', [OrderController::class, 'placeOrder']);
+//Route::post('orders/new', [OrderController::class, 'placeOrder']);
 Route::put('orders/{orderId}/update-status', [OrderController::class, 'updateOrderStatus']);
 Route::put('orders/{orderId}/cancel', [OrderController::class, 'cancelOrder']);
 

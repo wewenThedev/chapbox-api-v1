@@ -34,7 +34,7 @@ class PaymentController extends Controller
     {
         //
         //return Payment::all();
-        return Payment::paginate(2);
+        return Payment::paginate(5);
     }
 
     /**
@@ -44,7 +44,8 @@ class PaymentController extends Controller
     public function store(StorePaymentRequest $request)
     {
         //
-        $payment = Payment::create($request->validated());
+        //$payment = Payment::create($request->validated());
+        $payment = Payment::create($request->toArray());
         return response()->json($payment, 201);
 
     }

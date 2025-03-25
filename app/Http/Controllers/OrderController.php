@@ -86,7 +86,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreOrderRequest $request)
+    /*public function store(StoreOrderRequest $request)
     {
         DB::beginTransaction();
         DB::commit();
@@ -100,7 +100,7 @@ class OrderController extends Controller
 
         return response()->json(['message' => 'Commande passée avec succès'], 201);
         //return response()->json(['message' => 'Order placed successfully']);
-    }
+    }*/
 
     /**
      * Display the specified resource.
@@ -159,7 +159,8 @@ class OrderController extends Controller
      * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function placeOrder(StoreOrderRequest $request)
+    //public function placeOrder(/*StoreOrderRequest*/ Request $request)
+    public function store(/*StoreOrderRequest*/ Request $request)
     {
         //dd($request);
         /*
@@ -184,15 +185,29 @@ class OrderController extends Controller
             $rules['guest_phone']     = 'required|string';
             $rules['guest_email']     = 'required|email';
         }
+*/
+        $validator = Validator::make($request->all(), [
+                'required|exists:carts,id',
+                'user_id' => 'exists:users,id',
+                'guest_firstname' => 'string|max:255',
+                'guest_lastname' => 'string|max:255',
+                'guest_phone' => 'string|max:15|unique:users',
+                //'guest_email' => 'required|email|max:255|unique:users',
+                'guest_email' => 'nullable|email|max:255|unique:users',
 
-        $validator = Validator::make($request->all(), $rules);
+                'recovery_mode' => 'required|in:pickup,delivery',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'shipping_date' => 'required|string|max:255',
+            'shipping_address' => 'required|string|max:255',
+        ]);
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validator->errors(),
             ], 422);
         }
-        */
+        
+
         //Après toutes les validations
         // Récupérer la méthode de paiement pour vérifier, par exemple, que le paiement en espèces est réservé à la récupération en boutique
         $paymentMethod = PaymentMethod::find($request->payment_method_id);
@@ -231,6 +246,7 @@ class OrderController extends Controller
                     'message' => 'Les produits dans le panier proviennent de boutiques différentes.',
                 ], 400);
             }
+            
         }
         //??Pour une comande déjà initiée puis abandonnée au niveau du paiement 
         // Création de la commande
@@ -296,11 +312,12 @@ class OrderController extends Controller
             //ou ne supprime pas lui-meme les articles du panier
             //Donc c'est après le paoement que je vide le panier  --- clearCart de mon CartController
             //ShoppingDetails::where('cart_id', $cart->id)->delete();
+
             DB::commit();
             return response()->json([
                 'status'  => 'success',
                 //'message' => 'Commande passée avec succès.',
-                'message' => 'Commande lancée avec succès, mais aiement en attente.',
+                'message' => 'Commande lancée avec succès, mais paiement en attente.',
                 'data'    => $order,
             ], 201);
         } catch (\Exception $e) {
