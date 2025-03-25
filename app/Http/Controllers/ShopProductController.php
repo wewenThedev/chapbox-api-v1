@@ -29,18 +29,28 @@ class ShopProductController extends Controller
     public function index()
     {
         //
-        $shopProducts = ShopProduct::orderBy('created_at', 'desc')->paginate(10); // 10 produits par page
+    //dd($testImagesProducts);
+
+        $shopProducts = ShopProduct::with(['shop', 'product', 'imagesProduct'])::orderBy('created_at', 'desc')->paginate(10); // 10 produits par page
         //$shopProducts = ShopProduct::all();
+
+        //$shopProducts = ShopProduct::limit(10)->get();
         return response()->json($shopProducts, 200);
 
         //return ShopProduct::paginate(5);
     }
 
+    public function latestShopProducts(){
+        $latest = ShopProduct::limit(10)->orderByDesc('created_at')->get();
+        return response()->json($latest, 200);
+    }
+    
+
     public function getProductsByShop($shopId)
     {
-        $shopProduct = ShopProduct::with(['shop', 'product'])->where('shop_id', $shopId)->get();
-        //dd($shopProduct);
-        return response()->json($shopProduct, 200);
+        $shopProducts = ShopProduct::with(['shop', 'product'])->where('shop_id', $shopId)->get();
+        //dd($shopProducts);
+        return response()->json($shopProducts, 200);
     }
 
 
@@ -50,8 +60,9 @@ class ShopProductController extends Controller
     public function show($shopId, $productId)
     {
         $shopProduct = ShopProduct::with(['shop', 'product'])->where('shop_id', $shopId)->where('product_id', $productId)->get();
+        //$shopProduct = ShopProduct::where('shop_id', $shopId)->where('product_id', $productId)->get();
         //dd($shopProduct);
-        return response()->json($shopProduct, 200);
+        return response()->json(['shopProduct' => $shopProduct], 200);
     }
 
 
@@ -92,6 +103,13 @@ class ShopProductController extends Controller
             //dd($shopProduct);
             return response()->json(["message" => "Le produit ".$shopProduct->product->name." du supermarché ".$shopProduct->shop->fullName." supprimé avec succès"], 204);
         }
+    }
+
+    public function getImagesProduct($shopId, $productId){
+
+    $imagesProducts = ShopProduct::with('imagesProduct')->where('shop_id', )->where('product_id', )->get();
+    return response()->json( $imagesProducts,200);
+
     }
 
     /**
@@ -154,6 +172,30 @@ public function getNewShopProducts()
     ], 200);
 }
 
+
+
+public function getLocalProducts()
+{
+    $keywords = [
+        '100% Benin', 'béninois', 'benin', 'produit local',
+        'produit du terroir', 'fabriqué au Bénin', 'produit au Bénin', 'made in benin', 'bénin', 'benin', 'béninois',
+        '100% bénin', '100% béninois', 'produit au bénin',
+        'fabriqué au bénin', 'au bénin', '100% produit localement', '100% local', 'local'
+    ];
+    
+    $products = Product::where(function ($query) use ($keywords) {
+        foreach ($keywords as $keyword) {
+            $query->orWhere('description', 'LIKE', "%{$keyword}%")
+            ->orWhere('name', 'LIKE', "%{$keyword}%");
+        }
+    })
+    //->with(['shops', 'media']) // Charger les relations Shop et Media
+    ->get();
+
+    return $products;
+}
+
+
     /**
  * Trouve les produits 100% béninois en recherchant des mots-clés spécifiques dans le nom ou la description.
  *
@@ -161,26 +203,35 @@ public function getNewShopProducts()
  */
 public function findBenineseProducts()
 {
-    // Liste des mots-clés à rechercher (sans sensibilité à la casse)
-    $keywords = [
-        'made in benin', 'bénin', 'benin', 'béninois',
-        '100% bénin', '100% béninois', 'produit au bénin',
-        'fabriqué au bénin', 'au bénin'
-    ];
+    // Liste des mots-clés à rechercher (sans sensibilité à la casse) voir getLocalProducts
 
-    // Requête pour rechercher les produits contenant l'un des mots-clés
-    $products = ShopProduct::where(function ($query) use ($keywords) {
+    //ShopProduct::where('product.description','LIKE','%'. $keywords .'%')->get();
+
+    /*$products = ShopProduct::whereHas('product',function ($query) use ($keywords) {
         foreach ($keywords as $word) {
-            $query->orWhereRaw('LOWER(name) LIKE ?', ['%' . strtolower($word) . '%'])
-                  ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($word) . '%']);
+            $query->where('description', 'LIKE', '%' . strtolower($word) . '%');
         }
-    })->get();
+    })->orWhereHas('product',function ($query) use ($keywords) {
+        foreach ($keywords as $word) {
+            $query->where('name', 'LIKE', '%' . strtolower($word) . '%');
+        }
+    })->get();*/
 
+    
+    //$products = (new Product)->getLocalProducts();
+    $products = $this->getLocalProducts();
+
+    //mise à jour to return shopProduct with stock and price
+    
     return response()->json([
         'status' => 'success',
-        'count'  => $products->count(),
-        'data'   => $products
+        'total'  => $products->count(),
+        'products'   => $products
     ], 200);
+}
+
+public function findLocalProductsImages($products){
+
 }
 
 }

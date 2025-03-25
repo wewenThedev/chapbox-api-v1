@@ -27,14 +27,19 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    //relations à revoir
     public function media()
     {
-        return $this->belongsToMany(Media::class, 'product_media');
+        //return $this->belongsToMany(Media::class, 'product_media');
+        return $this->belongsToMany(ProductMedia::class, 'product_media')->withTimestamps();
     }
 
     public function shops(){
-        return $this->belongsToMany(Shop::class, 'shop_product')->withPivot('price', 'stock')->withTimestamps();
+        //return $this->belongsToMany(Shop::class, 'shop_product')->withPivot('price', 'stock')->withTimestamps();
+        return $this->belongsToMany(ShopProduct::class, 'shop_products')->withPivot('price', 'stock')->withTimestamps();
     }
+
+    //relations à revoir fin.
     
 
 }

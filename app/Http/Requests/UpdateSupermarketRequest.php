@@ -23,6 +23,7 @@ class UpdateSupermarketRequest extends FormRequest
     {
         return [
             //
+            'description' => 'string|min:4',
         ];
     }
 }

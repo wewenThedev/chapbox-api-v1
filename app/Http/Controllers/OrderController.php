@@ -299,7 +299,8 @@ class OrderController extends Controller
             DB::commit();
             return response()->json([
                 'status'  => 'success',
-                'message' => 'Commande passée avec succès.',
+                //'message' => 'Commande passée avec succès.',
+                'message' => 'Commande lancée avec succès, mais aiement en attente.',
                 'data'    => $order,
             ], 201);
         } catch (\Exception $e) {

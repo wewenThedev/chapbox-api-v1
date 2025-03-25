@@ -42,10 +42,10 @@ class ShopController extends Controller
     {
     
         
-        $shops = Shop::with(['address', 'products', 'media', 'supermarket'])->get();
+        //$shops = Shop::with(['address', 'products', 'media', 'supermarket'])->get();
 
         //$shops = Shop::all();
-        //$shops = Shop::paginate(2);
+        $shops = Shop::paginate(2);
 
         return response()->json($shops, 200);
     }

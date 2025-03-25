@@ -42,6 +42,19 @@ public function listSupermarketsRegistered(){
     return response()->json(['supermarkets' => $supermarkets], 201);
 }
 
+/*
+public function fetchShopsBySupermarket($supermarketId){
+
+    $supermarket = Supermarket::find($supermarketId);
+
+    if($supermarket){
+        $supermarket->load(['shops', 'address', 'logo']);
+        return response()->json($supermarket, 201);
+    }else{
+        return response()->json(['error' => 'Supermarché non trouvé'], 404);
+    }
+}*/
+
     /**
      * Display a listing of the resource.
      */
@@ -63,9 +76,11 @@ public function listSupermarketsRegistered(){
             if (auth()->user()->role == 'manager') {
                 $supermarkets = Supermarket::where('manager_id', auth()->id())->get();
                 //$supermarkets = Supermarket::where('manager_id', auth()->id())->paginate(3);
-            } else {
+            } else if(auth()->user()->role == 'adlmin'){
                 //$supermarkets = Supermarket::all();
-                //$supermarkets = Supermarket::paginate(5);
+                $supermarkets = Supermarket::with(['shops', 'address', 'logo'])->paginate(5);
+            }else{
+                $supermarkets = Supermarket::with(['shops', 'address', 'logo'])->paginate(10);
             }
         }else{
             //return response()->json('please go and connect yourself');
@@ -74,7 +89,7 @@ public function listSupermarketsRegistered(){
         }
         
         //return response()->SupermarketResource($supermarkets);
-        return response()->json($supermarkets, 201);
+        return response()->json(['supermarkets' => $supermarkets], 200);
     }
 
     /**
@@ -95,10 +110,21 @@ public function listSupermarketsRegistered(){
 
         if($supermarket){
         $supermarket->load(['shops', 'address', 'logo']);
-        return response()->json($supermarket, 201);
+        return response()->json($supermarket, 200);
     }else{
-        return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+        return response()->json(['error' => 'Supermarché non trouvé'], 404);
     }
+    }
+
+    public function updateSupermarketsDescription(UpdateSupermarketRequest $request){
+        $supermarkets = Supermarket::where('description', null)->get();
+
+        foreach ($supermarkets as $supermarket) {
+            $supermarket->description = $request->description;
+            $supermarket->save();
+        }
+
+        return response()->json(['success'=> 'Descritpion des supermarchés mises à jour avec succès'],200);
     }
 
     /**

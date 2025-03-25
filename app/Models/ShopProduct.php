@@ -25,4 +25,8 @@ class ShopProduct extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function imagesProduct(){
+            return $this->hasManyThrough(Product::class, ProductMedia::class, 'product_id', 'id');
+    }
 }

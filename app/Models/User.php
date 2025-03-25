@@ -28,7 +28,8 @@ class User extends Authenticatable
 
     public function cart()
     {
-        return $this->belongsTo(Cart::class, 'user_id');
+        //return $this->belongsTo(Cart::class, 'user_id');
+        return $this->hasOne(Cart::class, 'user_id');
     }
 
     public function shop()

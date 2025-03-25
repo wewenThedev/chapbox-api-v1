@@ -145,6 +145,11 @@ Route::apiResource('profiles', ProfileController::class);
 
 // Routes pour les catégories
 Route::apiResource('categories', CategoryController::class);
+Route::get('categories/{category}/products', [CategoryController::class, 'productsByCategory']);
+Route::post('categories/update-description-all', [CategoryController::class, 'updateCategoriesDescription']);
+Route::get('/categories/top-categories', [CategoryController::class, 'fetchTopCategories']);
+
+Route::post('supermarkets/update-description-all', [SupermarketController::class, 'updateSupermarketsDescription']);
 
 // Routes pour les produits
 Route::apiResource('products', ProductController::class);
@@ -156,7 +161,10 @@ Route::apiResource('supermarkets', SupermarketController::class);
 Route::apiResource('shops', ShopController::class);
 
 //Route pour voir la liste de chaque shop avec ses produits
-Route::get('shops/products', [ShopProductController::class, 'index']);
+Route::get('shopsAndProducts/all-products', [ShopProductController::class, 'index']);
+
+Route::get('shopsAndProducts/findBenineseProducts', [ShopProductController::class, 'findBenineseProducts']);
+
 
 //Route pour voir les produits qui concernent une shop en particulier
 Route::get('shops/{shopId}/products', [ShopProductController::class, 'getProductsByShop']);
